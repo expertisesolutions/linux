@@ -244,6 +244,10 @@ static inline int panda_parse(const struct panda_parser *parser,
 	}
 }
 
+extern int panda_parse_ethernet(const void *hdr, size_t len,
+			 struct panda_metadata *metadata,
+			 unsigned int flags, unsigned int max_encaps);
+
 static inline const struct panda_parser *panda_lookup_parser_table(
 				const struct panda_parser_table *table,
 				int key)

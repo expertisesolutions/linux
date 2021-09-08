@@ -24,6 +24,7 @@
  * SUCH DAMAGE.
  */
 
+#include <linux/module.h>
 #include <linux/types.h>
 #include <net/panda/parser.h>
 #include <net/panda/parser_metadata.h>
@@ -200,50 +201,10 @@ static void e8021AD_metadata(const void *vvlan, void *iframe,
 	frame->vlan.vlan_tpid = ETH_P_8021AD;
 }
 
-/*
-PANDA_METADATA_TEMP_ipv6(ipv6_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_ip_overlay(ip_overlay_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_ipv6_eh(ipv6_eh_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_ipv6_frag(ipv6_frag_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_ports_off(ports_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_icmp(icmp_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_vlan_8021AD(e8021AD_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_vlan_8021Q(e8021Q_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_mpls(mpls_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_arp_rarp(arp_rarp_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_tipc(tipc_metadata, panda_metadata_all)
-
-PANDA_METADATA_TEMP_tcp_option_mss(tcp_opt_mss_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_tcp_option_window_scaling(tcp_opt_window_scaling_metadata,
-					      panda_metadata_all)
-PANDA_METADATA_TEMP_tcp_option_timestamp(tcp_opt_timestamp_metadata,
-					 panda_metadata_all)
-
-PANDA_METADATA_TEMP_tcp_option_sack_1(tcp_opt_sack_metadata_1,
-				      panda_metadata_all)
-PANDA_METADATA_TEMP_tcp_option_sack_2(tcp_opt_sack_metadata_2,
-				      panda_metadata_all)
-PANDA_METADATA_TEMP_tcp_option_sack_3(tcp_opt_sack_metadata_3,
-				      panda_metadata_all)
-PANDA_METADATA_TEMP_tcp_option_sack_4(tcp_opt_sack_metadata_4,
-				      panda_metadata_all)
-
-PANDA_METADATA_TEMP_gre(gre_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_gre_pptp(gre_pptp_metadata, panda_metadata_all)
-
-PANDA_METADATA_TEMP_gre_checksum(gre_checksum_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_gre_keyid(gre_keyid_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_gre_seq(gre_seq_metadata, panda_metadata_all)
-
-PANDA_METADATA_TEMP_gre_pptp_key(gre_pptp_key_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_gre_pptp_seq(gre_pptp_seq_metadata, panda_metadata_all)
-PANDA_METADATA_TEMP_gre_pptp_ack(gre_pptp_ack_metadata, panda_metadata_all)
-*/
 /* Parse nodes. Parse nodes are composed of the common PANDA Parser protocol
  * nodes, metadata functions defined above, and protocol tables defined
  * below
  */
-
 PANDA_MAKE_PARSE_NODE(ether_node, panda_parse_ether, ether_metadata,
 		      NULL, ether_table);
 PANDA_MAKE_PARSE_NODE(ip_overlay_node, panda_parse_ip,/* ip_overlay_metadata*/NULL,
@@ -2675,3 +2636,12 @@ PANDA_PARSER_KMOD(
       &ether_node,
       panda_parser_big_ether_panda_parse_ether_node
     );
+
+int panda_parse_ethernet(const void *hdr, size_t len,
+			 struct panda_metadata *metadata,
+			 unsigned int flags, unsigned int max_encaps)
+{
+	return panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_big_ether), hdr, len, metadata, flags, max_encaps);
+}
+
+EXPORT_SYMBOL(panda_parse_ethernet);
