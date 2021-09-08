@@ -1,0 +1,100 @@
+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
+ *
+ * Copyright (c) 2020,2021 SiPanda Inc.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+#ifndef __PANDA_PROTO_PPPOE_H__
+#define __PANDA_PROTO_PPPOE_H__
+
+#include "net/panda/parser.h"
+
+struct pppoe_hdr_proto8 {
+#if defined(__LITTLE_ENDIAN_BITFIELD)
+	__u8 type : 4;
+	__u8 ver : 4;
+#elif defined(__BIG_ENDIAN_BITFIELD)
+	__u8 ver : 4;
+	__u8 type : 4;
+#else
+#error	"Please fix <asm/byteorder.h>"
+#endif
+	__u8 code;
+	__be16 sid;
+	__be16 length;
+	__u8 protocol;
+} __packed;
+
+struct pppoe_hdr_proto16 {
+#if defined(__LITTLE_ENDIAN_BITFIELD)
+	__u8 type : 4;
+	__u8 ver : 4;
+#elif defined(__BIG_ENDIAN_BITFIELD)
+	__u8 ver : 4;
+	__u8 type : 4;
+#else
+#error	"Please fix <asm/byteorder.h>"
+#endif
+	__u8 code;
+	__be16 sid;
+	__be16 length;
+	__be16 protocol;
+} __packed;
+
+/* PPP node definitions */
+static inline int pppoe_proto(const void *vppp)
+{
+/*
+ * https://tools.ietf.org/html/rfc1661#section-2
+ * if most significant byte is odd protocol length is 1 byte
+ */
+	return ((struct pppoe_hdr_proto8 *)vppp)->protocol % 2 ?
+		__be16_to_cpu(((struct pppoe_hdr_proto8 *)vppp)->protocol) :
+		((struct pppoe_hdr_proto16 *)vppp)->protocol;
+}
+
+static inline ssize_t pppoe_length(const void *vppp)
+{
+	return ((struct pppoe_hdr_proto8 *)vppp)->protocol % 2 ?
+		sizeof(struct pppoe_hdr_proto8) :
+		sizeof(struct pppoe_hdr_proto16);
+}
+
+#endif /* __PANDA_PROTO_PPP_H__ */
+
+#ifdef PANDA_DEFINE_PARSE_NODE
+
+/* panda_parse_ppp protocol node
+ *
+ * Parse PPP header
+ *
+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
+ */
+static const struct panda_proto_node panda_parse_pppoe __unused() = {
+	.name = "PPPoE",
+	.min_len = sizeof(struct pppoe_hdr_proto8),
+	.ops.len = pppoe_length,
+	.ops.next_proto = pppoe_proto,
+};
+
+#endif /* PANDA_DEFINE_PARSE_NODE */
