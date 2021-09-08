@@ -455,4 +455,13 @@ config ETHTOOL_NETLINK
 	  netlink. It provides better extensibility and some new features,
 	  e.g. notification messages.
 
+config NET_PANDA
+	bool "PANDA parser"
+	help
+	  If you say Y here, you will be able to classify packets based on
+	  a configurable combination of packet keys and masks.
+
+	  To compile this code as a module, choose M here: the module will
+	  be called cls_flower.
+
 endif   # if NET
