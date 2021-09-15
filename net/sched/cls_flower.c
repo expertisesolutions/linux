@@ -24,11 +24,23 @@
 #include <net/geneve.h>
 #include <net/vxlan.h>
 #include <net/erspan.h>
-
 #include <net/dst.h>
 #include <net/dst_metadata.h>
 
 #include <uapi/linux/netfilter/nf_conntrack_common.h>
+
+#ifdef CONFIG_NET_CLS_FLOWER_PANDA_MODULE
+#define USE_PANDA
+#endif	//CONFIG_NET_CLS_FLOWER_PANDA_MODULE
+#ifdef CONFIG_NET_CLS_FLOWER_PANDA 
+#define USE_PANDA
+#endif //CONFIG_NET_CLS_FLOWER_PANDA
+
+#ifdef USE_PANDA
+
+#include <net/panda/parser.h>
+PANDA_PARSER_KMOD_EXTERN(panda_parser_big_ether);
+#endif 	//USE_PANDA
 
 #define TCA_FLOWER_KEY_CT_FLAGS_MAX \
 		((__TCA_FLOWER_KEY_CT_FLAGS_MAX - 1) << 1)
@@ -128,6 +140,17 @@ struct cls_fl_filter {
 	refcount_t refcnt;
 	bool deleted;
 };
+
+//Panda global variables
+#ifdef USE_PANDA
+
+/* Meta data structure for just one frame */
+struct panda_parser_big_metadata_one {
+    struct panda_metadata panda_data;
+    struct fl_flow_key frame;
+};
+
+#endif 	//USE_PANDA
 
 static const struct rhashtable_params mask_ht_params = {
 	.key_offset = offsetof(struct fl_flow_mask, key),
@@ -289,7 +312,7 @@ struct cls_fl_filter *fl_mask_lookup(struct fl_flow_mask *mask, struct fl_flow_k
 
 	return __fl_lookup(mask, &mkey);
 }
-
+#ifndef USE_PANDA
 static u16 fl_ct_info_to_flower_map[] = {
 	[IP_CT_ESTABLISHED] =		TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
 					TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED,
@@ -304,12 +327,52 @@ static u16 fl_ct_info_to_flower_map[] = {
 	[IP_CT_NEW] =			TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
 					TCA_FLOWER_KEY_CT_FLAGS_NEW,
 };
+#endif
+
+#ifdef USE_PANDA
+static int fl_panda_parse(struct sk_buff *skb, struct fl_flow_key* frame)
+{
+    int err;
+    struct panda_parser_big_metadata_one mdata;
+    void *data;
+    size_t pktlen;
+
+    memset(&mdata, 0, sizeof(mdata.panda_data));
+    memcpy(&mdata.frame, frame, sizeof(struct fl_flow_key));
+
+    err = skb_linearize(skb);
+    if (err < 0)
+        return err;
+
+    BUG_ON(skb->data_len);
+
+    data = skb_mac_header(skb);
+    pktlen = skb_mac_header_len(skb) + skb->len;
+
+    err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_big_ether), data,
+              pktlen, &mdata.panda_data, 0, 1);
+
+    if (err != PANDA_STOP_OKAY) {
+        pr_err("Failed to parse packet! (%d)", err);
+        
+		if(err != PANDA_STOP_UNKNOWN_PROTO){
+			return -1;
+		}
+	}
+
+    memcpy(frame, &mdata.frame, sizeof(struct fl_flow_key));
+
+    return 0;
+}
+#endif 	//USE_PANDA
 
 static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		       struct tcf_result *res)
 {
 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
+#ifndef USE_PANDA
 	bool post_ct = qdisc_skb_cb(skb)->post_ct;
+#endif	//USE_PANDA
 	struct fl_flow_key skb_key;
 	struct fl_flow_mask *mask;
 	struct cls_fl_filter *f;
@@ -323,6 +386,17 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		 * protocol, so do it rather here.
 		 */
 		skb_key.basic.n_proto = skb_protocol(skb, false);
+#ifdef USE_PANDA
+		if(skb->vlan_present) {
+            skb_key.basic.n_proto = skb_protocol(skb, true);
+            skb_key.vlan.vlan_id = skb_vlan_tag_get_id(skb);
+            skb_key.vlan.vlan_priority = skb_vlan_tag_get_prio(skb);
+            skb_key.vlan.vlan_tpid = skb->vlan_proto;
+        }
+
+        fl_panda_parse(skb, &skb_key);
+#else 	//USE_PANDA
+
 		skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);
 		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
 				    fl_ct_info_to_flower_map,
@@ -330,7 +404,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 				    post_ct);
 		skb_flow_dissect_hash(skb, &mask->dissector, &skb_key);
 		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
-
+#endif 	//USE_PANDA
 		f = fl_mask_lookup(mask, &skb_key);
 		if (f && !tc_skip_sw(f->flags)) {
 			*res = f->res;
@@ -343,7 +417,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 static int fl_init(struct tcf_proto *tp)
 {
 	struct cls_fl_head *head;
-
+	
 	head = kzalloc(sizeof(*head), GFP_KERNEL);
 	if (!head)
 		return -ENOBUFS;
