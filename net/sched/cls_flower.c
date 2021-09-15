@@ -16,6 +16,7 @@
 #include <linux/in6.h>
 #include <linux/ip.h>
 #include <linux/mpls.h>
+#include <linux/ppp_defs.h>
 
 #include <net/sch_generic.h>
 #include <net/pkt_cls.h>
@@ -31,6 +32,19 @@
 #include <net/dst_metadata.h>
 
 #include <uapi/linux/netfilter/nf_conntrack_common.h>
+
+#ifdef CONFIG_NET_CLS_FLOWER_PANDA_MODULE
+#define USE_PANDA
+#endif	//CONFIG_NET_CLS_FLOWER_PANDA_MODULE
+#ifdef CONFIG_NET_CLS_FLOWER_PANDA
+#define USE_PANDA
+#endif //CONFIG_NET_CLS_FLOWER_PANDA
+
+#ifdef USE_PANDA
+
+#include <net/panda/parser.h>
+PANDA_PARSER_KMOD_EXTERN(panda_parser_flower_ether);
+#endif	//USE_PANDA
 
 #define TCA_FLOWER_KEY_CT_FLAGS_MAX \
 		((__TCA_FLOWER_KEY_CT_FLAGS_MAX - 1) << 1)
@@ -72,6 +86,7 @@ struct fl_flow_key {
 	} tp_range;
 	struct flow_dissector_key_ct ct;
 	struct flow_dissector_key_hash hash;
+	struct flow_dissector_key_ppp ppp;
 	struct flow_dissector_key_num_of_vlans num_of_vlans;
 } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
 
@@ -131,6 +146,17 @@ struct cls_fl_filter {
 	refcount_t refcnt;
 	bool deleted;
 };
+
+//Panda global variables
+#ifdef USE_PANDA
+
+/* Meta data structure for just one frame */
+struct panda_parser_flower_metadata_one {
+	struct panda_metadata panda_data;
+	struct fl_flow_key frame;
+};
+
+#endif	//USE_PANDA
 
 static const struct rhashtable_params mask_ht_params = {
 	.key_offset = offsetof(struct fl_flow_mask, key),
@@ -293,6 +319,7 @@ struct cls_fl_filter *fl_mask_lookup(struct fl_flow_mask *mask, struct fl_flow_k
 	return __fl_lookup(mask, &mkey);
 }
 
+#ifndef USE_PANDA
 static u16 fl_ct_info_to_flower_map[] = {
 	[IP_CT_ESTABLISHED] =		TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
 					TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED,
@@ -307,13 +334,52 @@ static u16 fl_ct_info_to_flower_map[] = {
 	[IP_CT_NEW] =			TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
 					TCA_FLOWER_KEY_CT_FLAGS_NEW,
 };
+#endif
+
+#ifdef USE_PANDA
+static int fl_panda_parse(struct sk_buff *skb, struct fl_flow_key *frame)
+{
+	int err;
+	struct panda_parser_flower_metadata_one mdata;
+	void *data;
+	size_t pktlen;
+
+	memset(&mdata, 0, sizeof(mdata.panda_data));
+	memcpy(&mdata.frame, frame, sizeof(struct fl_flow_key));
+
+	err = skb_linearize(skb);
+	if (err < 0)
+		return err;
+
+	WARN_ON(skb->data_len);
+
+	data = skb_mac_header(skb);
+	pktlen = skb_mac_header_len(skb) + skb->len;
+
+	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_flower_ether), data,
+			  pktlen, &mdata.panda_data, 0, 1);
+
+	if (err != PANDA_STOP_OKAY) {
+		pr_err("Failed to parse packet! (%d)", err);
+
+		if (err != PANDA_STOP_UNKNOWN_PROTO)
+			return -1;
+	}
+
+	memcpy(frame, &mdata.frame, sizeof(struct fl_flow_key));
+
+	return 0;
+}
+#endif	//USE_PANDA
 
 static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		       struct tcf_result *res)
 {
 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
+#ifndef USE_PANDA
 	bool post_ct = tc_skb_cb(skb)->post_ct;
 	u16 zone = tc_skb_cb(skb)->zone;
+#endif	//USE_PANDA
 	struct fl_flow_key skb_key;
 	struct fl_flow_mask *mask;
 	struct cls_fl_filter *f;
@@ -327,6 +393,17 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		 * protocol, so do it rather here.
 		 */
 		skb_key.basic.n_proto = skb_protocol(skb, false);
+#ifdef USE_PANDA
+	if (skb->vlan_present) {
+		skb_key.basic.n_proto = skb_protocol(skb, false);
+		skb_key.vlan.vlan_eth_type = skb_protocol(skb, true);
+		skb_key.vlan.vlan_id = skb_vlan_tag_get_id(skb);
+		skb_key.vlan.vlan_priority = skb_vlan_tag_get_prio(skb);
+		skb_key.vlan.vlan_tpid = skb->vlan_proto;
+	}
+
+	fl_panda_parse(skb, &skb_key);
+#else	//USE_PANDA
 		skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);
 		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
 				    fl_ct_info_to_flower_map,
@@ -336,6 +413,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		skb_flow_dissect(skb, &mask->dissector, &skb_key,
 				 FLOW_DISSECTOR_F_STOP_BEFORE_ENCAP);
 
+#endif	//USE_PANDA
 		f = fl_mask_lookup(mask, &skb_key);
 		if (f && !tc_skip_sw(f->flags)) {
 			*res = f->res;
@@ -714,6 +792,7 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
 	[TCA_FLOWER_KEY_HASH]		= { .type = NLA_U32 },
 	[TCA_FLOWER_KEY_HASH_MASK]	= { .type = NLA_U32 },
 	[TCA_FLOWER_KEY_NUM_OF_VLANS]	= { .type = NLA_U8 },
+	[TCA_FLOWER_KEY_PPP_PROTO]	= { .type = NLA_U16 },
 
 };
 
@@ -1651,14 +1730,20 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
 		}
 	}
 
+	if (tb[TCA_FLOWER_KEY_PPP_PROTO]) {
+		fl_set_key_val(tb, &key->ppp.ppp_proto, TCA_FLOWER_KEY_PPP_PROTO,
+			       &mask->ppp.ppp_proto, TCA_FLOWER_UNSPEC,
+			       sizeof(key->ppp.ppp_proto));
+	}
 	if (key->basic.n_proto == htons(ETH_P_IP) ||
-	    key->basic.n_proto == htons(ETH_P_IPV6)) {
+		key->basic.n_proto == htons(ETH_P_IPV6) ||
+		key->ppp.ppp_proto == htons(PPP_IP) ||
+		key->ppp.ppp_proto == htons(PPP_IPV6)) {
 		fl_set_key_val(tb, &key->basic.ip_proto, TCA_FLOWER_KEY_IP_PROTO,
 			       &mask->basic.ip_proto, TCA_FLOWER_UNSPEC,
 			       sizeof(key->basic.ip_proto));
 		fl_set_key_ip(tb, false, &key->ip, &mask->ip);
 	}
-
 	if (tb[TCA_FLOWER_KEY_IPV4_SRC] || tb[TCA_FLOWER_KEY_IPV4_DST]) {
 		key->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
 		mask->control.addr_type = ~0;
@@ -2999,6 +3084,10 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
 		if (dev && nla_put_string(skb, TCA_FLOWER_INDEV, dev->name))
 			goto nla_put_failure;
 	}
+	if (fl_dump_key_val(skb, &key->ppp.ppp_proto, TCA_FLOWER_KEY_PPP_PROTO,
+			    &mask->ppp.ppp_proto, TCA_FLOWER_UNSPEC,
+			    sizeof(key->ppp.ppp_proto)))
+		goto nla_put_failure;
 
 	if (fl_dump_key_val(skb, key->eth.dst, TCA_FLOWER_KEY_ETH_DST,
 			    mask->eth.dst, TCA_FLOWER_KEY_ETH_DST_MASK,
@@ -3044,7 +3133,9 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
 	}
 
 	if ((key->basic.n_proto == htons(ETH_P_IP) ||
-	     key->basic.n_proto == htons(ETH_P_IPV6)) &&
+	     key->basic.n_proto == htons(ETH_P_IPV6) ||
+		 key->ppp.ppp_proto == htons(PPP_IP) ||
+		 key->ppp.ppp_proto == htons(PPP_IPV6)) &&
 	    (fl_dump_key_val(skb, &key->basic.ip_proto, TCA_FLOWER_KEY_IP_PROTO,
 			    &mask->basic.ip_proto, TCA_FLOWER_UNSPEC,
 			    sizeof(key->basic.ip_proto)) ||
