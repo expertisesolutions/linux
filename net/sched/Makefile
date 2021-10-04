@@ -77,6 +77,7 @@ obj-$(CONFIG_NET_CLS_FLOW)	+= cls_flow.o
 obj-$(CONFIG_NET_CLS_CGROUP)	+= cls_cgroup.o
 obj-$(CONFIG_NET_CLS_BPF)	+= cls_bpf.o
 obj-$(CONFIG_NET_CLS_FLOWER)	+= cls_flower.o
+cls_flower-y := cls_flower_main.o cls_flower2_panda_opt.o
 obj-$(CONFIG_NET_CLS_FLOWER2)	+= cls_flower2.o
 cls_flower2-y := cls_flower2_main.o cls_flower2_panda_opt.o
 obj-$(CONFIG_NET_CLS_MATCHALL)	+= cls_matchall.o
