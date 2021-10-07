@@ -29,14 +29,17 @@
 
 #include <uapi/linux/netfilter/nf_conntrack_common.h>
 
+#ifdef CONFIG_NET_CLS_FLOWER2_MODULE
 #define USE_PANDA
+#endif	//CONFIG_NET_CLS_FLOWER2_MODULE
+#ifdef CONFIG_NET_CLS_FLOWER2 
+#define USE_PANDA
+#endif //CONFIG_NET_CLS_FLOWER2
 
-//PANDA DEFINES
 #ifdef USE_PANDA
+
 #include <net/panda/parser.h>
-
 PANDA_PARSER_KMOD_EXTERN(panda_parser_big_ether);
-
 #endif 	//USE_PANDA
 
 #define TCA_FLOWER_KEY_CT_FLAGS_MAX \
@@ -376,6 +379,9 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 	struct cls_fl_filter *f;
 
 	pr_err("init Classify");
+#ifdef USE_PANDA
+	pr_err("Using PANDA");
+#endif
 	list_for_each_entry_rcu(mask, &head->masks, list) {
 		flow_dissector_init_keys(&skb_key.control, &skb_key.basic);
 		fl_clear_masked_range(&skb_key, mask);
