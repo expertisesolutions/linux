@@ -77,9 +77,11 @@ obj-$(CONFIG_NET_CLS_FLOW)	+= cls_flow.o
 obj-$(CONFIG_NET_CLS_CGROUP)	+= cls_cgroup.o
 obj-$(CONFIG_NET_CLS_BPF)	+= cls_bpf.o
 obj-$(CONFIG_NET_CLS_FLOWER)	+= cls_flower.o
+ifeq ($(CONFIG_NET_CLS_FLOWER_PANDA),n)
+cls_flower-y := cls_flower_main.o
+else
 cls_flower-y := cls_flower_main.o cls_flower2_panda_opt.o
-#obj-$(CONFIG_NET_CLS_FLOWER2)	+= cls_flower.o
-#cls_flower2-y := cls_flower2_panda_opt.o
+endif
 obj-$(CONFIG_NET_CLS_MATCHALL)	+= cls_matchall.o
 obj-$(CONFIG_NET_EMATCH)	+= ematch.o
 obj-$(CONFIG_NET_EMATCH_CMP)	+= em_cmp.o
