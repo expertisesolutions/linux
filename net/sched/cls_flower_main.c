@@ -349,7 +349,6 @@ static int fl_panda_parse(struct sk_buff *skb, struct fl_flow_key* frame)
     data = skb_mac_header(skb);
     pktlen = skb_mac_header_len(skb) + skb->len;
 
-	pr_err("initializing panda parser");
     err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_big_ether), data,
               pktlen, &mdata.panda_data, 0, 1);
 
@@ -378,10 +377,6 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 	struct fl_flow_mask *mask;
 	struct cls_fl_filter *f;
 
-	pr_err("init Classify");
-#ifdef USE_PANDA
-	pr_err("Using PANDA");
-#endif
 	list_for_each_entry_rcu(mask, &head->masks, list) {
 		flow_dissector_init_keys(&skb_key.control, &skb_key.basic);
 		fl_clear_masked_range(&skb_key, mask);
@@ -392,10 +387,8 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		 */
 		skb_key.basic.n_proto = skb_protocol(skb, false);
 		
-	pr_err("before -> eth_type: 0x%0x | dst_ip: 0x%0x | ip_proto 0x%0x",skb_key.basic.n_proto,skb_key.ipv4.dst,skb_key.basic.ip_proto);
 #ifdef USE_PANDA
 
-		pr_err("panda Classify");
 		if(skb->vlan_present) {
             skb_key.basic.n_proto = skb_protocol(skb, true);
             skb_key.vlan.vlan_id = skb_vlan_tag_get_id(skb);
@@ -406,7 +399,6 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
         fl_panda_parse(skb, &skb_key);
 #else 	//USE_PANDA
 
-		pr_err("flow Classify");
 		skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);
 		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
 				    fl_ct_info_to_flower_map,
@@ -415,7 +407,6 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		skb_flow_dissect_hash(skb, &mask->dissector, &skb_key);
 		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
 #endif 	//USE_PANDA
-		pr_err("after -> eth_type: 0x%0x | dst_ip: 0x%0x | ip_proto 0x%0x",skb_key.basic.n_proto,skb_key.ipv4.dst,skb_key.basic.ip_proto);
 		f = fl_mask_lookup(mask, &skb_key);
 		if (f && !tc_skip_sw(f->flags)) {
 			*res = f->res;
@@ -429,11 +420,6 @@ static int fl_init(struct tcf_proto *tp)
 {
 	struct cls_fl_head *head;
 	
-#ifdef USE_PANDA
-	pr_err("initializing with panda");
-#else
-	pr_err("initializing with flowdis");
-#endif
 	head = kzalloc(sizeof(*head), GFP_KERNEL);
 	if (!head)
 		return -ENOBUFS;

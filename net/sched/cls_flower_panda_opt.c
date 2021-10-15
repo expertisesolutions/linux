@@ -58,7 +58,7 @@
 #include "net/panda/parser_metadata.h"
 #include "net/panda/proto_nodes_def.h"
 
-#include "cls_flower2_panda_noopt.c"
+#include "cls_flower_panda_noopt.c"
 
 #ifndef PANDA_LOOP_COUNT
 #define PANDA_LOOP_COUNT 8
