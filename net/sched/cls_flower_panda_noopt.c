@@ -100,7 +100,6 @@ static void ipv4_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 {
 	struct fl2_flow_key *frame = iframe;
 	const struct iphdr *iph = viph;
-	pr_err("extracting ipv4 metadata");
 	
 	frame->basic.ip_proto = iph->protocol;
 	
@@ -112,8 +111,6 @@ static void ipv4_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 	frame->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
 	memcpy(&frame->ipv4.src, &iph->saddr,
 	       sizeof(frame->ipv4));
-	pr_err("ipv4 metadata iph dst:0x%0x",iph->saddr);
-	pr_err("ipv4 metadata frame dst:0x%0x",frame->ipv4.dst);
 }
 
 static void ipv6_metadata(const void *viph, void *iframe, struct panda_ctrl_data ctrl)

@@ -256,7 +256,6 @@ static __always_inline int __ether_node_panda_parse(const struct panda_parser *p
 	ssize_t hlen;
 	int ret;
 
-	pr_err("parsing ethernet");
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
 	if (ret != PANDA_OKAY)
 		return ret;
@@ -383,7 +382,6 @@ static __always_inline int __ipv4_check_node_panda_parse(const struct panda_pars
 	struct panda_ctrl_data ctrl;
 	ssize_t hlen;
 	int ret;
-	pr_err("parsing ipv4");
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
 	if (ret != PANDA_OKAY)
 		return ret;

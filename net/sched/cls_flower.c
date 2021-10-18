@@ -386,9 +386,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		 * protocol, so do it rather here.
 		 */
 		skb_key.basic.n_proto = skb_protocol(skb, false);
-		
 #ifdef USE_PANDA
-
 		if(skb->vlan_present) {
             skb_key.basic.n_proto = skb_protocol(skb, true);
             skb_key.vlan.vlan_id = skb_vlan_tag_get_id(skb);
