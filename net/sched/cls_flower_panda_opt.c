@@ -1526,10 +1526,28 @@ static inline int panda_parser_big_ether_panda_parse_ether_node(
 
 	return ret;
 }
-
 PANDA_PARSER_KMOD(
       panda_parser_big_ether,
       "",
       &ether_node,
       panda_parser_big_ether_panda_parse_ether_node
     );
+
+EXPORT_SYMBOL(panda_parser_big_ether_kmod);
+
+static int __init panda_init(void)
+{
+    pr_debug("Initializing panda_module\n");
+    return 0;
+}
+
+static void __exit panda_exit(void)
+{
+    pr_debug("Panda module exiting\n");
+}
+module_init(panda_init);
+module_exit(panda_exit);
+
+MODULE_AUTHOR("Tom Herbert <tom@expertise.dev>");
+MODULE_DESCRIPTION("PANDA parser");
+MODULE_LICENSE("GPL v2");
