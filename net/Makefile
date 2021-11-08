@@ -6,6 +6,7 @@
 # Rewritten to use lists instead of if-statements.
 #
 
+
 obj-y				:= devres.o socket.o core/
 
 obj-$(CONFIG_COMPAT)		+= compat.o
@@ -79,4 +80,4 @@ obj-$(CONFIG_NET_NCSI)		+= ncsi/
 obj-$(CONFIG_XDP_SOCKETS)	+= xdp/
 obj-$(CONFIG_MPTCP)		+= mptcp/
 obj-$(CONFIG_MCTP)		+= mctp/
-obj-$(CONFIG_PANDA)		+= panda/
+obj-$(CONFIG_NET_PANDA)		+= panda/

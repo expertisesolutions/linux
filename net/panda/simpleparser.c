@@ -30,22 +30,16 @@
  * metadata is extracted at various nodes.
  */
 
+#include <linux/module.h>
 #include <linux/types.h>
 
 /* Define protocol nodes that are used below */
-#include "panda/parser_metadata.h"
-#include "panda/proto_nodes_def.h"
-
+#include <net/panda/parser.h>
+#include <net/panda/parser_metadata.h>
+#include <net/panda/proto_nodes_def.h>
 /* Meta data functions for parser nodes. Use the canned templates
  * for common metadata
  */
-enum flow_dissector_key_id {
-    FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
-    FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
-    FLOW_DISSECTOR_KEY_IPV4_ADDRS, /* struct flow_dissector_key_ipv4_addrs */
-    FLOW_DISSECTOR_KEY_IPV6_ADDRS, /* struct flow_dissector_key_ipv6_addrs */
-    FLOW_DISSECTOR_KEY_PORTS, /* struct flow_dissector_key_ports */
-};
 
 struct mlx5_ct_tuple {
     u16 addr_type;
