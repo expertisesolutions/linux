@@ -41,7 +41,7 @@
  * for common metadata
  */
 
-struct mlx5_ct_tuple {
+struct panda_tuple {
     u16 addr_type;
     __be16 n_proto;
     u8 ip_proto;
@@ -63,16 +63,17 @@ struct mlx5_ct_tuple {
     u16 zone;
 };
 
+
 static void ether_metadata(const void *veth, void *iframe, struct panda_ctrl_data ctrl)
 {
-    struct mlx5_ct_tuple *frame = iframe;
+    struct panda_tuple *frame = iframe;
 
     frame->n_proto = ((struct ethhdr *)veth)->h_proto;
 }
 
 static void ipv4_metadata(const void *viph, void *iframe, struct panda_ctrl_data ctrl)
 {
-    struct mlx5_ct_tuple *frame = iframe;
+    struct panda_tuple *frame = iframe;
     const struct iphdr *iph = viph;
 
     frame->ip_proto = iph->protocol;
@@ -85,7 +86,7 @@ static void ipv4_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 
 static void ipv6_metadata(const void *viph, void *iframe, struct panda_ctrl_data ctrl)
 {
-    struct mlx5_ct_tuple *frame = iframe;
+    struct panda_tuple *frame = iframe;
     const struct iphdr *iph = viph;
 
     frame->ip_proto = iph->protocol;
@@ -98,7 +99,7 @@ static void ipv6_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 static void ports_metadata(const void *vphdr, void *iframe,
          struct panda_ctrl_data ctrl)
 {
-    struct mlx5_ct_tuple *frame = iframe;
+    struct panda_tuple *frame = iframe;
 
     frame->port.src = ((struct port_hdr *)vphdr)->sport;
     frame->port.dst = ((struct port_hdr *)vphdr)->dport;
@@ -157,5 +158,5 @@ PANDA_MAKE_PROTO_TABLE(ipv6_table,
 /* Define parsers. Two of them: one for packets starting with an
  * Ethernet header, and one for packets starting with an IP header.
  */
-PANDA_PARSER_EXT(panda_parser_big_ether, "PANDA big parser for Ethernet",
+PANDA_PARSER(panda_parser_big_ether, "PANDA big parser for Ethernet",
 		 &ether_node);

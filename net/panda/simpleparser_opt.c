@@ -54,17 +54,10 @@
  * SUCH DAMAGE.
  */
 
-#include "net/panda/parser.h"
-#include "net/panda/parser_metadata.h"
-#include "net/panda/proto_nodes_def.h"
+#include <linux/skbuff.h>
 
 #include "simpleparser.c"
 
-/* Meta data structure for just one frame */
-struct panda_parser_big_metadata_one {
-    struct panda_metadata panda_data;
-    struct mlx5_ct_tuple frame;
-};
 
 static inline __attribute__((always_inline)) int check_pkt_len(const void* hdr,
 		const struct panda_proto_node *pnode, size_t len, ssize_t* hlen)
@@ -634,14 +627,24 @@ static inline int panda_parser_big_ether_panda_parse_ether_node(
 		len, 0, metadata, flags, max_encaps, frame, frame_num);
 }
 PANDA_PARSER_KMOD(
-      panda_parser_big_ether_opt,
+      panda_parser_big_ether,
       "",
       &ether_node,
       panda_parser_big_ether_panda_parse_ether_node
-    );
+    )
 
 
-int mlx5_panda_parse(struct sk_buff *skb, struct mlx5_ct_tuple* frame)
+/* Meta data structure for just one frame */
+struct panda_parser_big_metadata_one {
+    struct panda_metadata panda_data;
+    struct panda_tuple frame;
+};
+
+int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple* frame)
+{
+	return 0;
+}
+/*int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple* frame)
 {
     int err;
     struct panda_parser_big_metadata_one mdata;
@@ -649,7 +652,7 @@ int mlx5_panda_parse(struct sk_buff *skb, struct mlx5_ct_tuple* frame)
     size_t pktlen;
 
     memset(&mdata, 0, sizeof(mdata.panda_data));
-    memcpy(&mdata.frame, frame, sizeof(struct mlx5_ct_tuple));
+    memcpy(&mdata.frame, frame, sizeof(struct panda_tuple));
 
     err = skb_linearize(skb);
     if (err < 0)
@@ -668,8 +671,9 @@ int mlx5_panda_parse(struct sk_buff *skb, struct mlx5_ct_tuple* frame)
         return -1;
         }
 
-    memcpy(frame, &mdata.frame, sizeof(struct mlx5_ct_tuple));
+    memcpy(frame, &mdata.frame, sizeof(struct panda_tuple));
 
     return 0;
 }
-EXPORT_SYMBOL(mlx5_panda_parse);
+*/
+//EXPORT_SYMBOL(tuple_panda_parse);
