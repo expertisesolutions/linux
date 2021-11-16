@@ -200,19 +200,10 @@ static const struct panda_parser __##PARSER = {				\
 /* Flags to Panda parser functions */
 #define PANDA_F_DEBUG			(1 << 0)
 
-#ifndef __KERNEL__
 /* Parse starting at the provided root node */
 int __panda_parse(const struct panda_parser *parser, const void *hdr,
 		  size_t len, struct panda_metadata *metadata,
 		  unsigned int flags, unsigned int max_encaps);
-#else
-static inline int __panda_parse(const struct panda_parser *parser,
-		  const void *hdr, size_t len, struct panda_metadata *metadata,
-		  unsigned int flags, unsigned int max_encaps)
-{
-	return 0;
-}
-#endif
 
 /* Parse packet starting from a parser node
  *

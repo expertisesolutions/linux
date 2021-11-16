@@ -24,6 +24,10 @@
  * SUCH DAMAGE.
  */
 
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/slab.h>
 #include <net/panda/parser.h>
 
 /* Lookup a type in a node table*/
@@ -87,8 +91,6 @@ static int panda_parse_one_tlv(
 
 parse_again:
 
-	if (flags & PANDA_F_DEBUG)
-		printf("PANDA parsing TLV %s\n", parse_tlv_node->name);
 
 	if (proto_tlv_node && (tlv_ctrl.hdr_len < proto_tlv_node->min_len)) {
 		/* Treat check length error as an unrecognized TLV */
@@ -292,9 +294,6 @@ static int panda_parse_flag_fields(const struct panda_parse_node *parse_node,
 			flag_ctrl.hdr_len = flag_fields->fields[i].size;
 			flag_ctrl.hdr_offset = offset + off;
 
-			if (pflags & PANDA_F_DEBUG)
-				printf("PANDA parsing flag-field %s\n",
-				      parse_flag_field_node->name);
 
 			if (ops->extract_metadata)
 				ops->extract_metadata(cp, frame, flag_ctrl);
@@ -345,7 +344,7 @@ int __panda_parse(const struct panda_parser *parser, const void *hdr,
 		/* Protocol node length checks */
 
 		if (flags & PANDA_F_DEBUG)
-			printf("PANDA parsing %s\n", proto_node->name);
+			pr_debug("PANDA parsing %s\n", proto_node->name);
 
 		if (len < hlen)
 			return PANDA_STOP_LENGTH;
@@ -486,7 +485,7 @@ struct panda_parser *panda_parser_create(const char *name,
 {
 	struct panda_parser *parser;
 
-	parser = calloc(1, sizeof(*parser));
+	parser = kcalloc(1, sizeof(*parser), GFP_KERNEL);
 	if (!parser)
 		return NULL;
 
@@ -503,7 +502,7 @@ struct panda_parser *panda_parser_opt_create(const char *name,
 {
 	struct panda_parser *parser;
 
-	parser = calloc(1, sizeof(*parser));
+	parser = kcalloc(1, sizeof(*parser), GFP_KERNEL);
 	if (!parser)
 		return NULL;
 
@@ -517,9 +516,9 @@ struct panda_parser *panda_parser_opt_create(const char *name,
 
 void panda_parser_destroy(struct panda_parser *parser)
 {
-	free(parser);
+	kfree(parser);
 }
-
+/*
 siphash_key_t __panda_hash_key;
 void panda_hash_secret_init(siphash_key_t *init_key)
 {
@@ -533,22 +532,22 @@ void panda_hash_secret_init(siphash_key_t *init_key)
 			bytes[i] = rand();
 	}
 }
-
+*/
 void panda_print_hash_input(const void *start, size_t len)
 {
 	const __u8 *data = start;
 	int i;
 
-	printf("Hash input (size %lu): ", len);
+	pr_debug("Hash input (size %lu): ", len);
 	for (i = 0; i < len; i++)
-		printf("%02x ", data[i]);
-	printf("\n");
+		pr_debug("%02x ", data[i]);
+	pr_debug("\n");
 }
 
 /* Create a dummy parser to ensure that the section is defined */
 static struct panda_parser_def PANDA_SECTION_ATTR(panda_parsers) dummy_parser;
 
-int panda_parser_init(void)
+int __init panda_parser_init(void)
 {
 	const struct panda_parser_def *def_base =
 					panda_section_base_panda_parsers();
@@ -565,7 +564,7 @@ int panda_parser_init(void)
 			*def->parser = panda_parser_create(def->name,
 							   def->root_node);
 			if (!def->parser) {
-				fprintf(stderr, "Create parser \"%s\" failed\n",
+				pr_err("Create parser \"%s\" failed\n",
 					def->name);
 				goto fail;
 			}
@@ -575,7 +574,7 @@ int panda_parser_init(void)
 						def->root_node,
 						def->parser_entry_point);
 			if (!def->parser) {
-				fprintf(stderr, "Create parser \"%s\" failed\n",
+				pr_err("Create parser \"%s\" failed\n",
 					def->name);
 				goto fail;
 			}
@@ -595,6 +594,11 @@ fail:
 		*def->parser = NULL;
 	}
 	return -1;
+}
+
+static void __exit panda_parser_exit(void)
+{
+	pr_debug("exit panda_parser");
 }
 
 module_init(panda_parser_init);

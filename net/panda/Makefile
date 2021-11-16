@@ -4,5 +4,5 @@
 #
 ifeq ($(CONFIG_NET_PANDA),y)
 obj-$(CONFIG_NET_PANDA) += panda_parser.o
-panda_parser-y := simpleparser_opt.o
+panda_parser-y := main.o simpleparser_opt.o
 endif
