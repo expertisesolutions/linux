@@ -478,7 +478,7 @@ found_next:
 
 	} while (1);
 }
-
+EXPORT_SYMBOL(__panda_parse);
 struct panda_parser *panda_parser_create(const char *name,
 					 const struct panda_parse_node
 								*root_node)
