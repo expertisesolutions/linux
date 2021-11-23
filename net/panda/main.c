@@ -545,15 +545,16 @@ void panda_print_hash_input(const void *start, size_t len)
 }
 
 /* Create a dummy parser to ensure that the section is defined */
-static struct panda_parser_def PANDA_SECTION_ATTR(panda_parsers) dummy_parser;
+//static struct panda_parser_def PANDA_SECTION_ATTR(panda_parsers) dummy_parser;
 
 int __init panda_parser_init(void)
 {
-	const struct panda_parser_def *def_base =
-					panda_section_base_panda_parsers();
+	const struct panda_parser_def teste[2];
+	const struct panda_parser_def *def_base = teste; //=
+//					panda_section_base_panda_parsers();
 	int i, j;
 
-	for (i = 0; i < panda_section_array_size_panda_parsers(); i++) {
+	for (i = 0; i < 1; i++) {
 		const struct panda_parser_def *def = &def_base[i];
 
 		if (!def->name && !def->root_node)
