@@ -479,45 +479,45 @@ found_next:
 	} while (1);
 }
 EXPORT_SYMBOL(__panda_parse);
-struct panda_parser *panda_parser_create(const char *name,
-					 const struct panda_parse_node
-								*root_node)
-{
-	struct panda_parser *parser;
+// struct panda_parser *panda_parser_create(const char *name,
+// 					 const struct panda_parse_node
+// 								*root_node)
+// {
+// 	struct panda_parser *parser;
 
-	parser = kcalloc(1, sizeof(*parser), GFP_KERNEL);
-	if (!parser)
-		return NULL;
+// 	parser = kcalloc(1, sizeof(*parser), GFP_KERNEL);
+// 	if (!parser)
+// 		return NULL;
 
-	parser->name = name;
-	parser->root_node = root_node;
+// 	parser->name = name;
+// 	parser->root_node = root_node;
 
-	return parser;
-}
+// 	return parser;
+// }
 
-static
-struct panda_parser *panda_parser_opt_create(const char *name,
-				const struct panda_parse_node *root_node,
-				panda_parser_opt_entry_point parser_entry_point)
-{
-	struct panda_parser *parser;
+// static
+// struct panda_parser *panda_parser_opt_create(const char *name,
+// 				const struct panda_parse_node *root_node,
+// 				panda_parser_opt_entry_point parser_entry_point)
+// {
+// 	struct panda_parser *parser;
 
-	parser = kcalloc(1, sizeof(*parser), GFP_KERNEL);
-	if (!parser)
-		return NULL;
+// 	parser = kcalloc(1, sizeof(*parser), GFP_KERNEL);
+// 	if (!parser)
+// 		return NULL;
 
-	parser->name = name;
-	parser->root_node = root_node;
-	parser->parser_type = PANDA_OPTIMIZED;
-	parser->parser_entry_point = parser_entry_point;
+// 	parser->name = name;
+// 	parser->root_node = root_node;
+// 	parser->parser_type = PANDA_OPTIMIZED;
+// 	parser->parser_entry_point = parser_entry_point;
 
-	return parser;
-}
+// 	return parser;
+// }
 
-void panda_parser_destroy(struct panda_parser *parser)
-{
-	kfree(parser);
-}
+// void panda_parser_destroy(struct panda_parser *parser)
+// {
+// 	kfree(parser);
+// }
 /*
 siphash_key_t __panda_hash_key;
 void panda_hash_secret_init(siphash_key_t *init_key)
@@ -547,56 +547,65 @@ void panda_print_hash_input(const void *start, size_t len)
 /* Create a dummy parser to ensure that the section is defined */
 //static struct panda_parser_def PANDA_SECTION_ATTR(panda_parsers) dummy_parser;
 
+// int __init panda_parser_init(void)
+// {
+// 	const struct panda_parser_def teste[2];
+// 	const struct panda_parser_def *def_base = teste; //=
+// //					panda_section_base_panda_parsers();
+// 	int i, j;
+
+// 	for (i = 0; i < 1; i++) {
+// 		const struct panda_parser_def *def = &def_base[i];
+
+// 		if (!def->name && !def->root_node)
+// 			continue;
+
+// 		switch (def->parser_type) {
+// 		case  PANDA_GENERIC:
+// 			*def->parser = panda_parser_create(def->name,
+// 							   def->root_node);
+// 			if (!def->parser) {
+// 				pr_err("Create parser \"%s\" failed\n",
+// 					def->name);
+// 				goto fail;
+// 			}
+// 			break;
+// 		case PANDA_OPTIMIZED:
+// 			*def->parser = panda_parser_opt_create(def->name,
+// 						def->root_node,
+// 						def->parser_entry_point);
+// 			if (!def->parser) {
+// 				pr_err("Create parser \"%s\" failed\n",
+// 					def->name);
+// 				goto fail;
+// 			}
+// 			break;
+// 		default:
+// 			goto fail;
+// 		}
+// 	}
+
+// 	return 0;
+
+// fail:
+// 	for (j = 0; j < i; j++) {
+// 		const struct panda_parser_def *def = &def_base[i];
+
+// 		panda_parser_destroy(*def->parser);
+// 		*def->parser = NULL;
+// 	}
+// 	return -1;
+// }
+
+// static void __exit panda_parser_exit(void)
+// {
+// 	pr_debug("exit panda_parser");
+// }
+
 int __init panda_parser_init(void)
 {
-	const struct panda_parser_def teste[2];
-	const struct panda_parser_def *def_base = teste; //=
-//					panda_section_base_panda_parsers();
-	int i, j;
-
-	for (i = 0; i < 1; i++) {
-		const struct panda_parser_def *def = &def_base[i];
-
-		if (!def->name && !def->root_node)
-			continue;
-
-		switch (def->parser_type) {
-		case  PANDA_GENERIC:
-			*def->parser = panda_parser_create(def->name,
-							   def->root_node);
-			if (!def->parser) {
-				pr_err("Create parser \"%s\" failed\n",
-					def->name);
-				goto fail;
-			}
-			break;
-		case PANDA_OPTIMIZED:
-			*def->parser = panda_parser_opt_create(def->name,
-						def->root_node,
-						def->parser_entry_point);
-			if (!def->parser) {
-				pr_err("Create parser \"%s\" failed\n",
-					def->name);
-				goto fail;
-			}
-			break;
-		default:
-			goto fail;
-		}
-	}
-
 	return 0;
-
-fail:
-	for (j = 0; j < i; j++) {
-		const struct panda_parser_def *def = &def_base[i];
-
-		panda_parser_destroy(*def->parser);
-		*def->parser = NULL;
-	}
-	return -1;
 }
-
 static void __exit panda_parser_exit(void)
 {
 	pr_debug("exit panda_parser");
