@@ -54,10 +54,20 @@
  * SUCH DAMAGE.
  */
 
-#include <linux/skbuff.h>
+
 
 #include "simpleparser.c"
 
+#include <linux/skbuff.h>
+#include <linux/export.h>
+#include <linux/bpf.h>
+
+struct sk_buff;
+
+void batata(const struct sk_buff *sk)
+{
+
+}
 
 static inline __attribute__((always_inline)) int check_pkt_len(const void* hdr,
 		const struct panda_proto_node *pnode, size_t len, ssize_t* hlen)
@@ -640,10 +650,14 @@ struct panda_parser_big_metadata_one {
     struct panda_tuple frame;
 };
 
-int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple* frame)
-{
-	return 0;
-}
+// int tuple_panda_parse(struct panda_tuple* frame)
+// {
+// 	struct sk_buff skb_2;
+// 	skb_2.ip_defrag_offset=0;
+// 	return 0;
+// }
+
+
 /*int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple* frame)
 {
     int err;

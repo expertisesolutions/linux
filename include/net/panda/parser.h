@@ -31,7 +31,7 @@
  *
  * Definitions and functions for PANDA parser.
  */
-
+#include <linux/skbuff.h>
 #include <linux/types.h>
 
 #include "net/panda/compiler_helpers.h"

@@ -1387,7 +1387,7 @@ static inline __u32 skb_get_hash(struct sk_buff *skb)
 
 	return skb->hash;
 }
-
+void batata(const struct sk_buff *sk);
 static inline __u32 skb_get_hash_flowi6(struct sk_buff *skb, const struct flowi6 *fl6)
 {
 	if (!skb->l4_hash && !skb->sw_hash) {
