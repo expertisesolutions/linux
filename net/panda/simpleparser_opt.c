@@ -54,10 +54,9 @@
  * SUCH DAMAGE.
  */
 
-#include <linux/skbuff.h>
+
 
 #include "simpleparser.c"
-
 
 static inline __attribute__((always_inline)) int check_pkt_len(const void* hdr,
 		const struct panda_proto_node *pnode, size_t len, ssize_t* hlen)
@@ -633,47 +632,3 @@ PANDA_PARSER_KMOD(
       panda_parser_big_ether_panda_parse_ether_node
     )
 
-
-/* Meta data structure for just one frame */
-struct panda_parser_big_metadata_one {
-    struct panda_metadata panda_data;
-    struct panda_tuple frame;
-};
-
-int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple* frame)
-{
-	return 0;
-}
-/*int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple* frame)
-{
-    int err;
-    struct panda_parser_big_metadata_one mdata;
-    void *data;
-    size_t pktlen;
-
-    memset(&mdata, 0, sizeof(mdata.panda_data));
-    memcpy(&mdata.frame, frame, sizeof(struct panda_tuple));
-
-    err = skb_linearize(skb);
-    if (err < 0)
-        return err;
-
-    BUG_ON(skb->data_len);
-
-    data = skb_mac_header(skb);
-    pktlen = skb_mac_header_len(skb) + skb->len;
-
-    err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_big_ether), data,
-              pktlen, &mdata.panda_data, 0, 1);
-
-    if (err != PANDA_STOP_OKAY) {
-                pr_err("Failed to parse packet! (%d)", err);
-        return -1;
-        }
-
-    memcpy(frame, &mdata.frame, sizeof(struct panda_tuple));
-
-    return 0;
-}
-*/
-//EXPORT_SYMBOL(tuple_panda_parse);

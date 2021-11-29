@@ -31,13 +31,14 @@
  *
  * Definitions and functions for PANDA parser.
  */
-
+#include <linux/skbuff.h>
 #include <linux/types.h>
 
 #include "net/panda/compiler_helpers.h"
 #include "net/panda/flag_fields.h"
 #include "net/panda/parser_types.h"
 #include "net/panda/tlvs.h"
+
 
 /* Panda parser return codes */
 enum {
