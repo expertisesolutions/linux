@@ -34,7 +34,8 @@
 #include <linux/types.h>
 #include <net/panda/parser.h>
 
-PANDA_PARSER_KMOD_EXTERN(panda_parser_big_ether);
+//PANDA_PARSER_KMOD_EXTERN(panda_parser_big_ether);
+PANDA_PARSER_EXTERN(panda_parser_big_ether);
 
 struct panda_tuple {
     u16 addr_type;
@@ -82,8 +83,8 @@ int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple* frame)
 
     data = skb_mac_header(skb);
     pktlen = skb_mac_header_len(skb) + skb->len;
-
-    err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_big_ether), data,
+    pr_err("parsing tuple!");
+    err = panda_parse(/*PANDA_PARSER_KMOD_NAME(*/panda_parser_big_ether/*)*/, data,
               pktlen, &mdata.panda_data, 0, 1);
 
     if (err != PANDA_STOP_OKAY) {

@@ -201,20 +201,6 @@ static const struct panda_parser __##PARSER = {				\
 /* Flags to Panda parser functions */
 #define PANDA_F_DEBUG			(1 << 0)
 
-// #ifndef __KERNEL__
-// /* Parse starting at the provided root node */
-// int __panda_parse(const struct panda_parser *parser, const void *hdr,
-// 		  size_t len, struct panda_metadata *metadata,
-// 		  unsigned int flags, unsigned int max_encaps);
-// #else
-// static inline int __panda_parse(const struct panda_parser *parser,
-// 		  const void *hdr, size_t len, struct panda_metadata *metadata,
-// 		  unsigned int flags, unsigned int max_encaps)
-// {
-// 	return 0;
-// }
-// #endif
-
 int __panda_parse(const struct panda_parser *parser, const void *hdr,
 		  size_t len, struct panda_metadata *metadata,
 		  unsigned int flags, unsigned int max_encaps);
@@ -237,6 +223,7 @@ static inline int panda_parse(const struct panda_parser *parser,
 			      struct panda_metadata *metadata,
 			      unsigned int flags, unsigned int max_encaps)
 {
+	pr_debug("Parsing with (%d) parser type",parser->parser_type);
 	switch (parser->parser_type) {
 	case PANDA_GENERIC:
 		return __panda_parse(parser, hdr, len, metadata, flags,
@@ -314,7 +301,7 @@ struct panda_parser_def {
 	panda_parser_opt_entry_point parser_entry_point;
 } PANDA_ALIGN_SECTION;
 
-PANDA_DEFINE_SECTION(panda_parsers, struct panda_parser_def)
+//PANDA_DEFINE_SECTION(panda_parsers, struct panda_parser_def)
 
 /* Helper to add parser to list of parser at initialization */
 #define PANDA_PARSER_ADD(PARSER, NAME, ROOT_NODE)			\
