@@ -66,8 +66,7 @@ static inline TYPE *panda_section_base_##NAME(void)			\
 }
 
 #ifndef __bpf__
-//#define PANDA_SECTION_ATTR(NAME) __attribute__((__used__, __section__(#NAME)))
-#define PANDA_SECTION_ATTR(NAME) __used __section(#NAME)
+#define PANDA_SECTION_ATTR(NAME) __attribute__((__used__, __section__(#NAME)))
 #else
 #define PANDA_SECTION_ATTR(NAME)
 #endif
