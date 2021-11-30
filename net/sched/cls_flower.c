@@ -36,9 +36,6 @@
 #define USE_PANDA
 #endif //CONFIG_NET_CLS_FLOWER_PANDA
 
-/*panda_tuple test*/
-#undef USE_PANDA
-
 #ifdef USE_PANDA
 
 #include <net/panda/parser.h>
@@ -49,33 +46,6 @@ PANDA_PARSER_KMOD_EXTERN(panda_parser_big_ether);
 		((__TCA_FLOWER_KEY_CT_FLAGS_MAX - 1) << 1)
 #define TCA_FLOWER_KEY_CT_FLAGS_MASK \
 		(TCA_FLOWER_KEY_CT_FLAGS_MAX - 1)
-
-
-
-struct panda_tuple {
-    u16 addr_type;
-    __be16 n_proto;
-    u8 ip_proto;
-    struct {
-        union {
-            __be32 src_v4;
-            struct in6_addr src_v6;
-        };
-        union {
-            __be32 dst_v4;
-            struct in6_addr dst_v6;
-        };
-    } ip;
-    struct {
-        __be16 src;
-        __be16 dst;
-    } port;
-
-    u16 zone;
-};
-
-
-extern int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple* frame);
 
 struct fl_flow_key {
 	struct flow_dissector_key_meta meta;
@@ -343,21 +313,20 @@ struct cls_fl_filter *fl_mask_lookup(struct fl_flow_mask *mask, struct fl_flow_k
 	return __fl_lookup(mask, &mkey);
 }
 #ifndef USE_PANDA
-/*test tuple*/
-// static u16 fl_ct_info_to_flower_map[] = {
-// 	[IP_CT_ESTABLISHED] =		TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
-// 					TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED,
-// 	[IP_CT_RELATED] =		TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
-// 					TCA_FLOWER_KEY_CT_FLAGS_RELATED,
-// 	[IP_CT_ESTABLISHED_REPLY] =	TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
-// 					TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED |
-// 					TCA_FLOWER_KEY_CT_FLAGS_REPLY,
-// 	[IP_CT_RELATED_REPLY] =		TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
-// 					TCA_FLOWER_KEY_CT_FLAGS_RELATED |
-// 					TCA_FLOWER_KEY_CT_FLAGS_REPLY,
-// 	[IP_CT_NEW] =			TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
-// 					TCA_FLOWER_KEY_CT_FLAGS_NEW,
-// };
+static u16 fl_ct_info_to_flower_map[] = {
+	[IP_CT_ESTABLISHED] =		TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
+					TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED,
+	[IP_CT_RELATED] =		TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
+					TCA_FLOWER_KEY_CT_FLAGS_RELATED,
+	[IP_CT_ESTABLISHED_REPLY] =	TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
+					TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED |
+					TCA_FLOWER_KEY_CT_FLAGS_REPLY,
+	[IP_CT_RELATED_REPLY] =		TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
+					TCA_FLOWER_KEY_CT_FLAGS_RELATED |
+					TCA_FLOWER_KEY_CT_FLAGS_REPLY,
+	[IP_CT_NEW] =			TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
+					TCA_FLOWER_KEY_CT_FLAGS_NEW,
+};
 #endif
 
 #ifdef USE_PANDA
@@ -402,13 +371,11 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 {
 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
 #ifndef USE_PANDA
-/*test tuple*/
-	//bool post_ct = qdisc_skb_cb(skb)->post_ct;
+	bool post_ct = qdisc_skb_cb(skb)->post_ct;
 #endif	//USE_PANDA
 	struct fl_flow_key skb_key;
 	struct fl_flow_mask *mask;
 	struct cls_fl_filter *f;
-	struct panda_tuple test;
 
 	list_for_each_entry_rcu(mask, &head->masks, list) {
 		flow_dissector_init_keys(&skb_key.control, &skb_key.basic);
@@ -429,18 +396,14 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 
         fl_panda_parse(skb, &skb_key);
 #else 	//USE_PANDA
-		tuple_panda_parse(skb, &test);
-		pr_err("addr_type:%d | n_proto:%d| ip_proto:%d",test.addr_type,test.n_proto,test.ip_proto);
-		pr_err("src_v4:0x%x | dst_v4 0x:%x",be32_to_cpu(test.ip.src_v4),be32_to_cpu(test.ip.dst_v4));
-		pr_err("src_v6:0x%x%x%x%x | dst_v6 0x:%x%x%x%x",test.ip.src_v6.in6_u.u6_addr32[0],test.ip.src_v6.in6_u.u6_addr32[1],test.ip.src_v6.in6_u.u6_addr32[2],test.ip.src_v6.in6_u.u6_addr32[3],test.ip.dst_v6.in6_u.u6_addr32[0],test.ip.dst_v6.in6_u.u6_addr32[1],test.ip.dst_v6.in6_u.u6_addr32[2],test.ip.dst_v6.in6_u.u6_addr32[3]);
-		pr_err("port: src:%d | dst:%d",be32_to_cpu(test.port.src),be32_to_cpu(test.port.dst));
-		// skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);
-		// skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
-		// 		    fl_ct_info_to_flower_map,
-		// 		    ARRAY_SIZE(fl_ct_info_to_flower_map),
-		// 		    post_ct);
-		// skb_flow_dissect_hash(skb, &mask->dissector, &skb_key);
-		// skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
+
+		skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);
+		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
+				    fl_ct_info_to_flower_map,
+				    ARRAY_SIZE(fl_ct_info_to_flower_map),
+				    post_ct);
+		skb_flow_dissect_hash(skb, &mask->dissector, &skb_key);
+		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
 #endif 	//USE_PANDA
 		f = fl_mask_lookup(mask, &skb_key);
 		if (f && !tc_skip_sw(f->flags)) {
