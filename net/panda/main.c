@@ -494,6 +494,7 @@ int __init panda_parser_init(void)
 {
 	return 0;
 }
+
 static void __exit panda_parser_exit(void)
 {
 	pr_debug("exit panda_parser");

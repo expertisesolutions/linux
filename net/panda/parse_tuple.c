@@ -38,64 +38,63 @@
 PANDA_PARSER_EXTERN(panda_parser_big_ether);
 
 struct panda_tuple {
-    u16 addr_type;
-    __be16 n_proto;
-    u8 ip_proto;
-    struct {
-        union {
-            __be32 src_v4;
-            struct in6_addr src_v6;
-        };
-        union {
-            __be32 dst_v4;
-            struct in6_addr dst_v6;
-        };
-    } ip;
-    struct {
-        __be16 src;
-        __be16 dst;
-    } port;
+	u16 addr_type;
+	__be16 n_proto;
+	u8 ip_proto;
+	struct {
+		union {
+			__be32 src_v4;
+			struct in6_addr src_v6;
+		};
+		union {
+			__be32 dst_v4;
+			struct in6_addr dst_v6;
+		};
+	} ip;
+	struct {
+		__be16 src;
+		__be16 dst;
+	} port;
 
-    u16 zone;
+	u16 zone;
 };
 
 /* Meta data structure for just one frame */
 struct panda_parser_big_metadata_one {
-    struct panda_metadata panda_data;
-    struct panda_tuple frame;
+	struct panda_metadata panda_data;
+	struct panda_tuple frame;
 };
 
-int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple* frame)
+int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple *frame)
 {
-    int err;
-    struct panda_parser_big_metadata_one mdata;
-    void *data;
-    size_t pktlen;
+	int err;
+	struct panda_parser_big_metadata_one mdata;
+	void *data;
+	size_t pktlen;
 
-    memset(&mdata, 0, sizeof(mdata.panda_data));
-    memcpy(&mdata.frame, frame, sizeof(struct panda_tuple));
+	memset(&mdata, 0, sizeof(mdata.panda_data));
+	memcpy(&mdata.frame, frame, sizeof(struct panda_tuple));
 
-    err = skb_linearize(skb);
-    if (err < 0)
-        return err;
+	err = skb_linearize(skb);
+	if (err < 0)
+		return err;
 
-    BUG_ON(skb->data_len);
+	WARN_ON(skb->data_len);
 
-    data = skb_mac_header(skb);
-    pktlen = skb_mac_header_len(skb) + skb->len;
-    pr_err("parsing tuple!");
-    err = panda_parse(/*PANDA_PARSER_KMOD_NAME(*/panda_parser_big_ether/*)*/, data,
-              pktlen, &mdata.panda_data, 0, 1);
+	data = skb_mac_header(skb);
+	pktlen = skb_mac_header_len(skb) + skb->len;
+	pr_err("parsing tuple!");
+	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_big_ether), data,
+			  pktlen, &mdata.panda_data, 0, 1);
 
-    if (err != PANDA_STOP_OKAY) {
-                pr_err("Failed to parse packet! (%d)", err);
-        return -1;
-        }
+	if (err != PANDA_STOP_OKAY) {
+		pr_err("Failed to parse packet! (%d)", err);
+		return -1;
+	}
 
-    memcpy(frame, &mdata.frame, sizeof(struct panda_tuple));
+	memcpy(frame, &mdata.frame, sizeof(struct panda_tuple));
 
-    return 0;
+return 0;
 }
-
 EXPORT_SYMBOL(tuple_panda_parse);
 

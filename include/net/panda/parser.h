@@ -223,7 +223,7 @@ static inline int panda_parse(const struct panda_parser *parser,
 			      struct panda_metadata *metadata,
 			      unsigned int flags, unsigned int max_encaps)
 {
-	pr_debug("Parsing with (%d) parser type",parser->parser_type);
+	pr_debug("Parsing with (%d) parser type", parser->parser_type);
 	switch (parser->parser_type) {
 	case PANDA_GENERIC:
 		return __panda_parse(parser, hdr, len, metadata, flags,
@@ -300,8 +300,6 @@ struct panda_parser_def {
 	enum panda_parser_type parser_type;
 	panda_parser_opt_entry_point parser_entry_point;
 } PANDA_ALIGN_SECTION;
-
-//PANDA_DEFINE_SECTION(panda_parsers, struct panda_parser_def)
 
 /* Helper to add parser to list of parser at initialization */
 #define PANDA_PARSER_ADD(PARSER, NAME, ROOT_NODE)			\
