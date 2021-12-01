@@ -34,8 +34,7 @@
 #include <linux/types.h>
 #include <net/panda/parser.h>
 
-//PANDA_PARSER_KMOD_EXTERN(panda_parser_big_ether);
-PANDA_PARSER_EXTERN(panda_parser_big_ether);
+PANDA_PARSER_KMOD_EXTERN(panda_parser_big_ether);
 
 struct panda_tuple {
 	u16 addr_type;
