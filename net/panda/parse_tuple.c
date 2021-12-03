@@ -95,5 +95,5 @@ int panda_parse_tuple(struct sk_buff *skb, void *frame)
 
 return 0;
 }
-EXPORT_SYMBOL(tuple_panda_parse);
+EXPORT_SYMBOL(panda_parse_tuple);
 

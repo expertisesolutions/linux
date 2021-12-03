@@ -331,6 +331,7 @@ struct panda_parser *panda_parser_create(const char *name,
 								*root_node);
 void panda_parser_destroy(struct panda_parser *parser);
 int panda_parser_init(void);
+int panda_parse_tuple(struct sk_buff *skb, void *frame);
 
 #ifndef __KERNEL__
 
