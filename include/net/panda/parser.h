@@ -331,6 +331,7 @@ struct panda_parser *panda_parser_create(const char *name,
 void panda_parser_destroy(struct panda_parser *parser);
 int panda_parser_init(void);
 
+
 #ifndef __KERNEL__
 
 extern siphash_key_t __panda_hash_key;

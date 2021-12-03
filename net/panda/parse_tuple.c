@@ -64,7 +64,7 @@ struct panda_parser_big_metadata_one {
 	struct panda_tuple frame;
 };
 
-int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple *frame)
+int panda_parse_tuple(struct sk_buff *skb, struct panda_tuple *frame)
 {
 	int err;
 	struct panda_parser_big_metadata_one mdata;
@@ -95,5 +95,5 @@ int tuple_panda_parse(struct sk_buff *skb, struct panda_tuple *frame)
 
 return 0;
 }
-EXPORT_SYMBOL(tuple_panda_parse);
+EXPORT_SYMBOL(panda_parse_tuple);
 
