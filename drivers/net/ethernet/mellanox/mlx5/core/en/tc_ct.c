@@ -15,6 +15,7 @@
 #include <linux/refcount.h>
 #include <linux/xarray.h>
 #include <linux/if_macvlan.h>
+#include <net/panda/parser.h>
 
 #include "lib/fs_chains.h"
 #include "en/tc_ct.h"
@@ -1227,46 +1228,12 @@ static bool
 mlx5_tc_ct_skb_to_tuple(struct sk_buff *skb, struct mlx5_ct_tuple *tuple,
 			u16 zone)
 {
-	struct flow_keys flow_keys;
-
 	skb_reset_network_header(skb);
-	skb_flow_dissect_flow_keys(skb, &flow_keys, FLOW_DISSECTOR_F_STOP_BEFORE_ENCAP);
+	panda_parse_tuple(skb, tuple);
 
-	tuple->zone = zone;
-
-	if (flow_keys.basic.ip_proto != IPPROTO_TCP &&
-	    flow_keys.basic.ip_proto != IPPROTO_UDP &&
-	    flow_keys.basic.ip_proto != IPPROTO_GRE)
+	if (tuple->n_proto != ETH_P_IP && tuple->n_proto != ETH_P_IPV6)
 		return false;
-
-	if (flow_keys.basic.ip_proto == IPPROTO_TCP ||
-	    flow_keys.basic.ip_proto == IPPROTO_UDP) {
-		tuple->port.src = flow_keys.ports.src;
-		tuple->port.dst = flow_keys.ports.dst;
-	}
-	tuple->n_proto = flow_keys.basic.n_proto;
-	tuple->ip_proto = flow_keys.basic.ip_proto;
-
-	switch (flow_keys.basic.n_proto) {
-	case htons(ETH_P_IP):
-		tuple->addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-		tuple->ip.src_v4 = flow_keys.addrs.v4addrs.src;
-		tuple->ip.dst_v4 = flow_keys.addrs.v4addrs.dst;
-		break;
-
-	case htons(ETH_P_IPV6):
-		tuple->addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-		tuple->ip.src_v6 = flow_keys.addrs.v6addrs.src;
-		tuple->ip.dst_v6 = flow_keys.addrs.v6addrs.dst;
-		break;
-	default:
-		goto out;
-	}
-
 	return true;
-
-out:
-	return false;
 }
 
 int mlx5_tc_ct_add_no_trk_match(struct mlx5_flow_spec *spec)
