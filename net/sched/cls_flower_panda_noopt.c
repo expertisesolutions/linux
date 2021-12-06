@@ -77,7 +77,6 @@ struct fl2_flow_key {
 	struct flow_dissector_key_ppp ppp;
 } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
 
-
 /* Meta data structure for just one frame */
 struct panda_parser_big_metadata_one {
 	struct panda_metadata panda_data;
@@ -100,9 +99,9 @@ static void ipv4_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 {
 	struct fl2_flow_key *frame = iframe;
 	const struct iphdr *iph = viph;
-	
+
 	frame->basic.ip_proto = iph->protocol;
-	
+
 	if (frame->vlan.vlan_id != 0 && frame->vlan.vlan_id != 1) {
 		frame->enc_control.addr_type = FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS;
 		memcpy(&frame->enc_ipv4.src, &iph->saddr,
@@ -123,31 +122,28 @@ static void ipv6_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 	frame->control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
 	memcpy(&frame->ipv6.src, &iph->saddr,
 	       sizeof(frame->ipv6));
-
 }
 
 static void ppp_metadata(const void *vppph, void *iframe, struct panda_ctrl_data ctrl)
 {
 	struct fl2_flow_key *frame = iframe;
 	//ppp protocol can have 8 or 16 bits
-	frame->ppp.ppp_proto = __cpu_to_be16(
-		ctrl.hdr_len == sizeof(struct pppoe_hdr_proto8) ? 
-		((struct pppoe_hdr_proto8*)vppph)->protocol : 
-		((struct pppoe_hdr_proto16*)vppph)->protocol
+	frame->ppp.ppp_proto = __cpu_to_be16(ctrl.hdr_len == sizeof(struct pppoe_hdr_proto8) ?
+		((struct pppoe_hdr_proto8 *)vppph)->protocol :
+		((struct pppoe_hdr_proto16 *)vppph)->protocol
 		);
-		
 }
 
-static void ports_metadata(const void *vphdr, void *iframe,			
-		 struct panda_ctrl_data ctrl)				
-{									
+static void ports_metadata(const void *vphdr, void *iframe,
+			   struct panda_ctrl_data ctrl)
+{
 	struct fl2_flow_key *frame = iframe;
+
 	frame->tp.ports = ((struct port_hdr *)vphdr)->ports;
 }
 
 static void arp_rarp_metadata(const void *vearp, void *iframe, struct panda_ctrl_data ctrl)
 {
-	
 	struct fl2_flow_key *frame = iframe;
 	const struct earphdr *earp = vearp;
 
@@ -176,7 +172,7 @@ static void icmp_metadata(const void *vicmp, void *iframe, struct panda_ctrl_dat
 }
 
 static void e8021Q_metadata(const void *vvlan, void *iframe,
-		 struct panda_ctrl_data ctrl)
+			    struct panda_ctrl_data ctrl)
 {
 	struct fl2_flow_key *frame = iframe;
 	const struct vlan_hdr *vlan = vvlan;
@@ -189,7 +185,7 @@ static void e8021Q_metadata(const void *vvlan, void *iframe,
 }
 
 static void e8021AD_metadata(const void *vvlan, void *iframe,
-		 struct panda_ctrl_data ctrl)
+			     struct panda_ctrl_data ctrl)
 {
 	struct fl2_flow_key *frame = iframe;
 	const struct vlan_hdr *vlan = vvlan;
@@ -225,9 +221,9 @@ PANDA_MAKE_PARSE_NODE(pppoe_node, panda_parse_pppoe, ppp_metadata, NULL,
 		      pppoe_table);
 
 PANDA_MAKE_PARSE_NODE(e8021AD_node, panda_parse_vlan, e8021AD_metadata, NULL,
-				ether_table);
+		      ether_table);
 PANDA_MAKE_PARSE_NODE(e8021Q_node, panda_parse_vlan, e8021Q_metadata, NULL,
-		      	ether_table);
+		      ether_table);
 PANDA_MAKE_OVERLAY_PARSE_NODE(ipv4ip_node, panda_parse_ipv4ip, NULL, NULL,
 			      &ipv4_node);
 PANDA_MAKE_OVERLAY_PARSE_NODE(ipv6ip_node, panda_parse_ipv6ip, NULL, NULL,
@@ -249,52 +245,52 @@ PANDA_MAKE_LEAF_PARSE_NODE(tcp_node, panda_parse_ports, ports_metadata,
 
 /* Protocol tables */
 PANDA_MAKE_PROTO_TABLE(ether_table,
-	{ __cpu_to_be16(ETH_P_IP), &ipv4_check_node },
-	{ __cpu_to_be16(ETH_P_IPV6), &ipv6_check_node },
-	{ __cpu_to_be16(ETH_P_8021AD), &e8021AD_node },
-	{ __cpu_to_be16(ETH_P_8021Q), &e8021Q_node },
-	{ __cpu_to_be16(ETH_P_ARP), &arp_node },
-	{ __cpu_to_be16(ETH_P_RARP), &rarp_node },
-	{ __cpu_to_be16(ETH_P_PPP_SES), &pppoe_node },
+		       { __cpu_to_be16(ETH_P_IP), &ipv4_check_node },
+		       { __cpu_to_be16(ETH_P_IPV6), &ipv6_check_node },
+		       { __cpu_to_be16(ETH_P_8021AD), &e8021AD_node },
+		       { __cpu_to_be16(ETH_P_8021Q), &e8021Q_node },
+		       { __cpu_to_be16(ETH_P_ARP), &arp_node },
+		       { __cpu_to_be16(ETH_P_RARP), &rarp_node },
+		       { __cpu_to_be16(ETH_P_PPP_SES), &pppoe_node },
 );
 
 PANDA_MAKE_PROTO_TABLE(ipv4_table,
-	{ IPPROTO_TCP, &tcp_node },
-	{ IPPROTO_UDP, &ports_node },
-	{ IPPROTO_SCTP, &ports_node },
-	{ IPPROTO_DCCP, &ports_node },
-	{ IPPROTO_ICMP, &icmpv4_node },
-	{ IPPROTO_IPIP, &ipv4ip_node },
-	{ IPPROTO_IPV6, &ipv6ip_node },
+		       { IPPROTO_TCP, &tcp_node },
+		       { IPPROTO_UDP, &ports_node },
+		       { IPPROTO_SCTP, &ports_node },
+		       { IPPROTO_DCCP, &ports_node },
+		       { IPPROTO_ICMP, &icmpv4_node },
+		       { IPPROTO_IPIP, &ipv4ip_node },
+		       { IPPROTO_IPV6, &ipv6ip_node },
 );
 
 PANDA_MAKE_PROTO_TABLE(ipv6_table,
-	{ IPPROTO_HOPOPTS, &ipv6_eh_node },
-	{ IPPROTO_ROUTING, &ipv6_eh_node },
-	{ IPPROTO_DSTOPTS, &ipv6_eh_node },
-	{ IPPROTO_FRAGMENT, &ipv6_frag_node },
-	{ IPPROTO_TCP, &tcp_node },
-	{ IPPROTO_UDP, &ports_node },
-	{ IPPROTO_SCTP, &ports_node },
-	{ IPPROTO_DCCP, &ports_node },
-	{ IPPROTO_ICMPV6, &icmpv6_node },
-	{ IPPROTO_IPIP, &ipv4ip_node },
-	{ IPPROTO_IPV6, &ipv6ip_node },
+		       { IPPROTO_HOPOPTS, &ipv6_eh_node },
+		       { IPPROTO_ROUTING, &ipv6_eh_node },
+		       { IPPROTO_DSTOPTS, &ipv6_eh_node },
+		       { IPPROTO_FRAGMENT, &ipv6_frag_node },
+		       { IPPROTO_TCP, &tcp_node },
+		       { IPPROTO_UDP, &ports_node },
+		       { IPPROTO_SCTP, &ports_node },
+		       { IPPROTO_DCCP, &ports_node },
+		       { IPPROTO_ICMPV6, &icmpv6_node },
+		       { IPPROTO_IPIP, &ipv4ip_node },
+		       { IPPROTO_IPV6, &ipv6ip_node },
 );
 
 PANDA_MAKE_PROTO_TABLE(ip_table,
-	{ 4, &ipv4_node },
-	{ 6, &ipv6_node },
+		       { 4, &ipv4_node },
+		       { 6, &ipv6_node },
 );
 
 PANDA_MAKE_PROTO_TABLE(ppp_table,
-	{ __cpu_to_be16(PPP_IP), &ipv4_check_node },
-	{ __cpu_to_be16(PPP_IPV6), &ipv6_check_node },
+		       { __cpu_to_be16(PPP_IP), &ipv4_check_node },
+		       { __cpu_to_be16(PPP_IPV6), &ipv6_check_node },
 );
 
 PANDA_MAKE_PROTO_TABLE(pppoe_table,
-	{ __cpu_to_be16(PPP_IP), &ipv4_check_node },
-	{ __cpu_to_be16(PPP_IPV6), &ipv6_check_node },
+		       { __cpu_to_be16(PPP_IP), &ipv4_check_node },
+		       { __cpu_to_be16(PPP_IPV6), &ipv6_check_node },
 );
 
 /* Define parsers. Two of them: one for packets starting with an
