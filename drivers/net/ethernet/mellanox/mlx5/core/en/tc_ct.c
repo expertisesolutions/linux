@@ -181,8 +181,6 @@ static const struct rhashtable_params tuples_nat_ht_params = {
 	.min_size = 16 * 1024,
 };
 
-extern int panda_parse_tuple(struct sk_buff *skb, void *frame);
-
 static bool
 mlx5_tc_ct_entry_has_nat(struct mlx5_ct_entry *entry)
 {
