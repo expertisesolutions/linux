@@ -583,7 +583,7 @@ static inline int __ports_node_panda_parse(const struct panda_parser *parser,
 	return PANDA_STOP_OKAY;
 }
 
-static inline int panda_parser_big_ether_panda_parse_ether_node(const struct panda_parser *parser,
+static inline int panda_parser_simple_ether_panda_parse_ether_node(const struct panda_parser *parser,
 								const void *hdr, size_t len,
 								struct panda_metadata *metadata,
 								unsigned int flags,
@@ -596,9 +596,9 @@ static inline int panda_parser_big_ether_panda_parse_ether_node(const struct pan
 		len, 0, metadata, flags, max_encaps, frame, frame_num);
 }
 
-PANDA_PARSER_KMOD(panda_parser_big_ether,
+PANDA_PARSER_KMOD(panda_parser_simple_ether,
 		  "",
 		  &ether_node,
-		  panda_parser_big_ether_panda_parse_ether_node
+		  panda_parser_simple_ether_panda_parse_ether_node
 		  );
 

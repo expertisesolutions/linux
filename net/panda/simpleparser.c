@@ -153,6 +153,6 @@ PANDA_MAKE_PROTO_TABLE(ipv6_table,
 /* Define parsers. Two of them: one for packets starting with an
  * Ethernet header, and one for packets starting with an IP header.
  */
-PANDA_PARSER_EXT(panda_parser_big_ether, "PANDA big parser for Ethernet",
+PANDA_PARSER_EXT(panda_parser_simple_ether, "PANDA big parser for Ethernet",
 		 &ether_node);
 
