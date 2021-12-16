@@ -395,7 +395,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 	}
 
 	fl_panda_parse(skb, &skb_key);
-	pr_err("sport %d dport %d", (int)skb_key.ports.src, (int)skb_key.ports.dst);
+	pr_err("sport %d dport %d", (int)skb_key.tp.src, (int)skb_key.tp.dst);
 #else	//USE_PANDA
 
 		skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);
