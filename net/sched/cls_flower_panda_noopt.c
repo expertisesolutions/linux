@@ -30,7 +30,7 @@
 #include <net/panda/parser_metadata.h>
 #include <net/panda/proto_nodes_def.h>
 
-/* PANDA Big Parser
+/* PANDA Flower Parser
  *
  * Implement flow dissector in PANDA. A protocol parse graph is created and
  * metadata is extracted at various nodes.
@@ -78,7 +78,7 @@ struct fl2_flow_key {
 } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
 
 /* Meta data structure for just one frame */
-struct panda_parser_big_metadata_one {
+struct panda_parser_flower_metadata_one {
 	struct panda_metadata panda_data;
 	struct fl2_flow_key frame;
 };
@@ -296,6 +296,6 @@ PANDA_MAKE_PROTO_TABLE(pppoe_table,
 /* Define parsers. Two of them: one for packets starting with an
  * Ethernet header, and one for packets starting with an IP header.
  */
-PANDA_PARSER_EXT(panda_parser_big_ether, "PANDA big parser for Ethernet",
+PANDA_PARSER_EXT(panda_parser_flower_ether, "PANDA flower parser for Ethernet",
 		 &ether_node);
 

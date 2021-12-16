@@ -39,7 +39,7 @@
 #ifdef USE_PANDA
 
 #include <net/panda/parser.h>
-PANDA_PARSER_KMOD_EXTERN(panda_parser_big_ether);
+PANDA_PARSER_KMOD_EXTERN(panda_parser_flower_ether);
 #endif	//USE_PANDA
 
 #define TCA_FLOWER_KEY_CT_FLAGS_MAX \
@@ -145,7 +145,7 @@ struct cls_fl_filter {
 #ifdef USE_PANDA
 
 /* Meta data structure for just one frame */
-struct panda_parser_big_metadata_one {
+struct panda_parser_flower_metadata_one {
 	struct panda_metadata panda_data;
 	struct fl_flow_key frame;
 };
@@ -334,7 +334,7 @@ static u16 fl_ct_info_to_flower_map[] = {
 static int fl_panda_parse(struct sk_buff *skb, struct fl_flow_key *frame)
 {
 	int err;
-	struct panda_parser_big_metadata_one mdata;
+	struct panda_parser_flower_metadata_one mdata;
 	void *data;
 	size_t pktlen;
 
@@ -350,7 +350,7 @@ static int fl_panda_parse(struct sk_buff *skb, struct fl_flow_key *frame)
 	data = skb_mac_header(skb);
 	pktlen = skb_mac_header_len(skb) + skb->len;
 
-	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_big_ether), data,
+	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_flower_ether), data,
 			  pktlen, &mdata.panda_data, 0, 1);
 
 	if (err != PANDA_STOP_OKAY) {
@@ -395,6 +395,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 	}
 
 	fl_panda_parse(skb, &skb_key);
+	pr_err("sport %d dport %d", (int)skb_key.ports.src, (int)skb_key.ports.dst);
 #else	//USE_PANDA
 
 		skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);

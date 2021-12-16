@@ -1366,7 +1366,7 @@ int __tcp_node_panda_parse(const struct panda_parser *parser,
 }
 
 static inline
-int panda_parser_big_ether_panda_parse_ether_node(const struct panda_parser *parser,
+int panda_parser_flower_ether_panda_parse_ether_node(const struct panda_parser *parser,
 						  const void *hdr, size_t len,
 						  struct panda_metadata *metadata,
 						  unsigned int flags, unsigned int max_encaps)
@@ -1515,12 +1515,12 @@ int panda_parser_big_ether_panda_parse_ether_node(const struct panda_parser *par
 	return ret;
 }
 
-PANDA_PARSER_KMOD(panda_parser_big_ether,
+PANDA_PARSER_KMOD(panda_parser_flower_ether,
 		  "",
 		  &ether_node,
-		  panda_parser_big_ether_panda_parse_ether_node
+		  panda_parser_flower_ether_panda_parse_ether_node
 	);
-EXPORT_SYMBOL(panda_parser_big_ether_kmod);
+EXPORT_SYMBOL(panda_parser_flower_ether_kmod);
 
 static int __init panda_init(void)
 {
