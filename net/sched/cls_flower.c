@@ -335,22 +335,16 @@ static int fl_panda_parse(struct sk_buff *skb, struct fl_flow_key *frame)
 {
 	int err;
 	struct panda_parser_flower_metadata_one mdata;
-	void *data;
 	size_t pktlen;
 
 	memset(&mdata, 0, sizeof(mdata.panda_data));
 	memcpy(&mdata.frame, frame, sizeof(struct fl_flow_key));
 
-	err = skb_linearize(skb);
-	if (err < 0)
-		return err;
-
 	WARN_ON(skb->data_len);
 
-	data = skb_mac_header(skb);
 	pktlen = skb_mac_header_len(skb) + skb->len;
 
-	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_flower_ether), data,
+	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_flower_ether), skb,
 			  pktlen, &mdata.panda_data, 0, 1);
 
 	if (err != PANDA_STOP_OKAY) {
