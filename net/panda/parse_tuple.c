@@ -68,22 +68,16 @@ int panda_parse_tuple(struct sk_buff *skb, void *frame)
 {
 	int err;
 	struct panda_parser_big_metadata_one mdata;
-	void *data;
 	size_t pktlen;
 
 	memset(&mdata, 0, sizeof(mdata.panda_data));
 	memcpy(&mdata.frame, frame, sizeof(struct panda_tuple));
 
-	err = skb_linearize(skb);
-	if (err < 0)
-		return err;
-
 	WARN_ON(skb->data_len);
 
-	data = skb_mac_header(skb);
 	pktlen = skb_mac_header_len(skb) + skb->len;
 	pr_err("parsing tuple!");
-	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_simple_ether), data,
+	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_simple_ether), skb,
 			  pktlen, &mdata.panda_data, 0, 1);
 
 	if (err != PANDA_STOP_OKAY) {
