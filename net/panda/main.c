@@ -503,6 +503,6 @@ static void __exit panda_parser_exit(void)
 module_init(panda_parser_init);
 module_exit(panda_parser_exit);
 
-MODULE_AUTHOR("Tom Herbert <tom@expertise.dev>");
+MODULE_AUTHOR("Tom Herbert <tom@sipanda.io>");
 MODULE_DESCRIPTION("PANDA parser");
 MODULE_LICENSE("GPL v2");
