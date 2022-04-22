@@ -85,7 +85,7 @@ static void ipv4_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 static void ipv6_metadata(const void *viph, void *iframe, struct panda_ctrl_data ctrl)
 {
 	struct panda_tuple *frame = iframe;
-	const struct iphdr *iph = viph;
+	const struct ipv6hdr *iph = viph;
 
 	frame->ip_proto = iph->protocol;
 
