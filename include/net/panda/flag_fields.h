@@ -30,7 +30,6 @@
 /* Definitions and functions for processing and parsing flag-fields */
 
 #include <linux/stddef.h>
-#include <stdbool.h>
 
 #include <linux/types.h>
 
@@ -135,7 +134,7 @@ static inline ssize_t panda_flag_fields_offset(__u32 targ_idx, __u32 flags,
 }
 
 /* Check flags are legal */
-static inline bool panda_flag_fields_check_invalid(__u32 flags, __u32 mask)
+static inline int panda_flag_fields_check_invalid(__u32 flags, __u32 mask)
 {
 	return !!(flags & ~mask);
 }
