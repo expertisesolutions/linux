@@ -29,8 +29,7 @@
 
 /* Type definitions for PANDA parser */
 
-#include <stddef.h>
-#include <stdbool.h>
+#include <linux/stddef.h>
 
 #include <linux/types.h>
 
@@ -217,7 +216,7 @@ typedef int (*panda_parser_opt_entry_point)(const struct panda_parser *parser,
 typedef int (*panda_parser_xdp_entry_point)(struct panda_ctx *ctx,
 					    const void **hdr,
 					    const void *hdr_end,
-					    bool tailcall);
+					    int tailcall);
 
 /* Definition of a PANDA parser. Fields are:
  *
