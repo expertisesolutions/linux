@@ -29,7 +29,7 @@
 
 /* Definitions and functions for processing and parsing flag-fields */
 
-#include <stddef.h>
+#include <linux/stddef.h>
 #include <stdbool.h>
 
 #include <linux/types.h>
