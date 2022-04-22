@@ -40,7 +40,9 @@ struct vlan_hdr {
 	__be16  h_vlan_TCI;
 	__be16  h_vlan_encapsulated_proto;
 };
-#endif
+#else
+#include <linux/if_vlan.h>
+#endif // __KERNEL__
 
 static inline int vlan_proto(const void *vvlan)
 {
