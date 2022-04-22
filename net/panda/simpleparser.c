@@ -90,7 +90,7 @@ static void ipv6_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 	frame->ip_proto = iph->nexthdr;
 
 	frame->addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-	memcpy(&frame->ip.src_v6, &iph->saddr,
+	memcpy(&frame->ip, &iph->saddr,
 	       sizeof(frame->ip));
 }
 
