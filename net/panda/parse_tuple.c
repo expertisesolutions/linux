@@ -82,7 +82,6 @@ int panda_parse_tuple(struct sk_buff *skb, void *frame)
 
 	data = skb_mac_header(skb);
 	pktlen = skb_mac_header_len(skb) + skb->len;
-	pr_err("parsing tuple!");
 	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_simple_ether), data,
 			  pktlen, &mdata.panda_data, 0, 1);
 
