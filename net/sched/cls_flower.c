@@ -16,6 +16,7 @@
 #include <linux/in6.h>
 #include <linux/ip.h>
 #include <linux/mpls.h>
+#include <linux/ppp_defs.h>
 
 #include <net/sch_generic.h>
 #include <net/pkt_cls.h>
@@ -49,6 +50,12 @@ PANDA_PARSER_KMOD_EXTERN(panda_parser_flower_ether);
 		((__TCA_FLOWER_KEY_CT_FLAGS_MAX - 1) << 1)
 #define TCA_FLOWER_KEY_CT_FLAGS_MASK \
 		(TCA_FLOWER_KEY_CT_FLAGS_MAX - 1)
+
+struct flow_dissector_key_ppp {
+	__be16 ppp_proto;
+};
+
+struct flow_dissector_key_ppp ppp;
 
 struct fl_flow_key {
 	struct flow_dissector_key_meta meta;
@@ -85,6 +92,7 @@ struct fl_flow_key {
 	} tp_range;
 	struct flow_dissector_key_ct ct;
 	struct flow_dissector_key_hash hash;
+	struct flow_dissector_key_ppp ppp;
 	struct flow_dissector_key_num_of_vlans num_of_vlans;
 } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
 
@@ -789,6 +797,7 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
 	[TCA_FLOWER_KEY_HASH]		= { .type = NLA_U32 },
 	[TCA_FLOWER_KEY_HASH_MASK]	= { .type = NLA_U32 },
 	[TCA_FLOWER_KEY_NUM_OF_VLANS]	= { .type = NLA_U8 },
+	[TCA_FLOWER_KEY_PPP_PROTO]	= { .type = NLA_U16 },
 
 };
 
@@ -1726,14 +1735,20 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
 		}
 	}
 
-	if (key->basic.n_proto == htons(ETH_P_IP) ||
-	    key->basic.n_proto == htons(ETH_P_IPV6)) {
+	if (tb[TCA_FLOWER_KEY_PPP_PROTO]){
+  		fl_set_key_val(tb, &key->ppp.ppp_proto, TCA_FLOWER_KEY_PPP_PROTO,
+  			       &mask->ppp.ppp_proto, TCA_FLOWER_UNSPEC,
+  		    	   sizeof(key->ppp.ppp_proto));
+  	}
+	if (key->basic.n_proto == htons(ETH_P_IP) 	||
+		key->basic.n_proto == htons(ETH_P_IPV6) ||
+ 		key->ppp.ppp_proto == htons(PPP_IP)		||
+ 		key->ppp.ppp_proto == htons(PPP_IPV6)) {
 		fl_set_key_val(tb, &key->basic.ip_proto, TCA_FLOWER_KEY_IP_PROTO,
 			       &mask->basic.ip_proto, TCA_FLOWER_UNSPEC,
 			       sizeof(key->basic.ip_proto));
 		fl_set_key_ip(tb, false, &key->ip, &mask->ip);
 	}
-
 	if (tb[TCA_FLOWER_KEY_IPV4_SRC] || tb[TCA_FLOWER_KEY_IPV4_DST]) {
 		key->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
 		mask->control.addr_type = ~0;
@@ -3074,6 +3089,10 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
 		if (dev && nla_put_string(skb, TCA_FLOWER_INDEV, dev->name))
 			goto nla_put_failure;
 	}
+	if (fl_dump_key_val(skb, &key->ppp.ppp_proto, TCA_FLOWER_KEY_PPP_PROTO,
+ 			    &mask->ppp.ppp_proto, TCA_FLOWER_UNSPEC,
+ 			    sizeof(key->ppp.ppp_proto)))
+ 		goto nla_put_failure;
 
 	if (fl_dump_key_val(skb, key->eth.dst, TCA_FLOWER_KEY_ETH_DST,
 			    mask->eth.dst, TCA_FLOWER_KEY_ETH_DST_MASK,
@@ -3119,7 +3138,9 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
 	}
 
 	if ((key->basic.n_proto == htons(ETH_P_IP) ||
-	     key->basic.n_proto == htons(ETH_P_IPV6)) &&
+	     key->basic.n_proto == htons(ETH_P_IPV6) ||
+ 		 key->ppp.ppp_proto == htons(PPP_IP)	||
+ 		 key->ppp.ppp_proto == htons(PPP_IPV6)) &&
 	    (fl_dump_key_val(skb, &key->basic.ip_proto, TCA_FLOWER_KEY_IP_PROTO,
 			    &mask->basic.ip_proto, TCA_FLOWER_UNSPEC,
 			    sizeof(key->basic.ip_proto)) ||
