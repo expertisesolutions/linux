@@ -104,11 +104,11 @@ static void ipv4_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 
 	if (frame->vlan.vlan_id != 0 && frame->vlan.vlan_id != 1) {
 		frame->enc_control.addr_type = FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS;
-		memcpy(&frame->enc_ipv4.src, &iph->saddr,
+		memcpy(&frame->enc_ipv4, &iph->saddr,
 		       sizeof(frame->ipv4));
 	}
 	frame->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-	memcpy(&frame->ipv4.src, &iph->saddr,
+	memcpy(&frame->ipv4, &iph->saddr,
 	       sizeof(frame->ipv4));
 }
 
@@ -120,7 +120,7 @@ static void ipv6_metadata(const void *viph, void *iframe, struct panda_ctrl_data
 	frame->basic.ip_proto = iph->nexthdr;
 
 	frame->control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-	memcpy(&frame->ipv6.src, &iph->saddr,
+	memcpy(&frame->ipv6, &iph->saddr,
 	       sizeof(frame->ipv6));
 }
 
