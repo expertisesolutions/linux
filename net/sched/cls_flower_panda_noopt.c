@@ -75,6 +75,7 @@ struct fl2_flow_key {
 	struct flow_dissector_key_ct ct;
 	struct flow_dissector_key_hash hash;
 	struct flow_dissector_key_ppp ppp;
+	struct flow_dissector_key_num_of_vlans num_of_vlans;
 } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
 
 /* Meta data structure for just one frame */
