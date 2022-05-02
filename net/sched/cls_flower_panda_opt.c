@@ -264,6 +264,8 @@ int __ether_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("EHTER type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -272,6 +274,9 @@ int __ether_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case __cpu_to_be16(ETH_P_IP):
@@ -335,6 +340,8 @@ int __ip_overlay_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("IP OVERLAY type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -343,6 +350,9 @@ int __ip_overlay_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case 4:
@@ -391,6 +401,8 @@ int __ipv4_check_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("IPV4 CHECK type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -399,6 +411,9 @@ int __ipv4_check_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case IPPROTO_TCP:
@@ -462,6 +477,8 @@ int __ipv4_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("IPV4 NODE type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -470,6 +487,9 @@ int __ipv4_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case IPPROTO_TCP:
@@ -533,6 +553,8 @@ int __ipv6_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("IPV6 NODE type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -541,6 +563,9 @@ int __ipv6_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case IPPROTO_HOPOPTS:
@@ -616,6 +641,8 @@ int __ipv6_check_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("IPV6 CHECK type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -624,6 +651,9 @@ int __ipv6_check_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case IPPROTO_HOPOPTS:
@@ -699,6 +729,8 @@ int __ipv6_eh_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("IPV6 EH type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -707,6 +739,9 @@ int __ipv6_eh_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case IPPROTO_HOPOPTS:
@@ -782,6 +817,8 @@ int __ipv6_frag_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("IPV6 FRAG type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -790,6 +827,9 @@ int __ipv6_frag_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case IPPROTO_HOPOPTS:
@@ -865,6 +905,8 @@ int __ppp_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("PPP type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -873,6 +915,9 @@ int __ppp_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+	
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case __cpu_to_be16(PPP_IP):
@@ -921,6 +966,8 @@ int __pppoe_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("PPPoE type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -929,6 +976,9 @@ int __pppoe_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case __cpu_to_be16(PPP_IP):
@@ -977,6 +1027,8 @@ int __e8021AD_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("e8021AD CHECK type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -985,6 +1037,9 @@ int __e8021AD_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case __cpu_to_be16(ETH_P_IP):
@@ -1048,6 +1103,8 @@ int __e8021Q_node_panda_parse(const struct panda_parser *parser,
 	{
 	int type = proto_node->ops.next_proto(*hdr);
 
+	pr_err("e8021Q type: 0x%x", type);
+
 	if (type < 0)
 		return type;
 
@@ -1056,6 +1113,9 @@ int __e8021Q_node_panda_parse(const struct panda_parser *parser,
 		*offset += hlen;
 		len -= hlen;
 	}
+
+	pr_err(" - offset	: %d", offset);
+	pr_err(" - len		: %d", len);
 
 	switch (type) {
 	case __cpu_to_be16(ETH_P_IP):
@@ -1381,9 +1441,13 @@ int panda_parser_flower_ether_panda_parse_ether_node(const struct panda_parser *
 				       len, &offset, metadata, flags,
 				       max_encaps, frame, frame_num);
 
+	pr_err("RET: 0x%x", ret);
+
 	for (i = 0; i < PANDA_LOOP_COUNT; i++) {
 		if (ret != PANDA_STOP_OKAY)
 			break;
+
+		pr_err("NEXT: 0x%x", next);
 		switch (next) {
 		case CODE_IGNORE:
 			break;
