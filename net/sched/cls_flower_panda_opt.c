@@ -245,6 +245,9 @@ int __ether_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("ETHER RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -275,8 +278,8 @@ int __ether_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case __cpu_to_be16(ETH_P_IP):
@@ -321,6 +324,9 @@ int __ip_overlay_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("IP OVERLAY RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -351,8 +357,8 @@ int __ip_overlay_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case 4:
@@ -382,6 +388,9 @@ int __ipv4_check_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("IPv4 CHECK RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -412,8 +421,8 @@ int __ipv4_check_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case IPPROTO_TCP:
@@ -458,6 +467,9 @@ int __ipv4_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("IPv4 RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -488,8 +500,8 @@ int __ipv4_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case IPPROTO_TCP:
@@ -534,6 +546,9 @@ int __ipv6_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("IPv6 RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -564,8 +579,8 @@ int __ipv6_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case IPPROTO_HOPOPTS:
@@ -622,6 +637,9 @@ int __ipv6_check_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("IPv6 CHECK RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -652,8 +670,8 @@ int __ipv6_check_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case IPPROTO_HOPOPTS:
@@ -710,6 +728,9 @@ int __ipv6_eh_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("IPv6 EH RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -740,8 +761,8 @@ int __ipv6_eh_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case IPPROTO_HOPOPTS:
@@ -798,6 +819,9 @@ int __ipv6_frag_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("IPv6 RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -828,8 +852,8 @@ int __ipv6_frag_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case IPPROTO_HOPOPTS:
@@ -886,6 +910,9 @@ int __ppp_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("PPP RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -916,8 +943,8 @@ int __ppp_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 	
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case __cpu_to_be16(PPP_IP):
@@ -947,6 +974,9 @@ int __pppoe_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("PPPoE RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -977,8 +1007,8 @@ int __pppoe_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case __cpu_to_be16(PPP_IP):
@@ -1008,6 +1038,9 @@ int __e8021AD_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("e8021AD RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -1038,8 +1071,8 @@ int __e8021AD_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case __cpu_to_be16(ETH_P_IP):
@@ -1084,6 +1117,9 @@ int __e8021Q_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("e8021Q RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
@@ -1114,8 +1150,8 @@ int __e8021Q_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", (int)(*offset));
-	pr_err(" - len		: %d", (int)len);
+	pr_err(" - offset : %u", (unsigned int)(*offset));
+	pr_err(" - len    : %u", (unsigned int)len);
 
 	switch (type) {
 	case __cpu_to_be16(ETH_P_IP):
@@ -1160,16 +1196,17 @@ int __ipv4ip_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("IPv4 IP RET: 0x%x", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
-
-	pr_err("IPV4 IP NODE ret: %d", ret);
 
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
 
-	pr_err(" - hdr_len: %d", (int)hlen);
-	pr_err(" - offset: %d", (int)(*offset));
+	pr_err(" - hdr_len: %u", (unsigned int)hlen);
+	pr_err(" - offset: %d", (unsigned int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1200,16 +1237,17 @@ int __ipv6ip_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
-	if (ret != PANDA_OKAY)
-		return ret;
 
 	pr_err("IPV6 IP NODE ret: %d", ret);
+
+	if (ret != PANDA_OKAY)
+		return ret;
 
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
 
-	pr_err(" - hdr_len: %d", (int)hlen);
-	pr_err(" - offset: %d", (int)(*offset));
+	pr_err(" - hdr_len: %u", (unsigned int)hlen);
+	pr_err(" - offset: %d", (unsigned int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1240,16 +1278,17 @@ int __ports_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
-	if (ret != PANDA_OKAY)
-		return ret;
 
 	pr_err("PORTS NODE ret: %d", ret);
+
+	if (ret != PANDA_OKAY)
+		return ret;
 
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
 
-	pr_err(" - hdr_len: %d", (int)hlen);
-	pr_err(" - offset: %d", (int)(*offset));
+	pr_err(" - hdr_len: %u", (unsigned int)hlen);
+	pr_err(" - offset: %d", (unsigned int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1280,16 +1319,17 @@ int __icmpv4_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
-	if (ret != PANDA_OKAY)
-		return ret;
 
 	pr_err("ICMPV4 NODE ret: %d", ret);
+
+	if (ret != PANDA_OKAY)
+		return ret;
 
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
 
-	pr_err(" - hdr_len: %d", (int)hlen);
-	pr_err(" - offset: %d", (int)(*offset));
+	pr_err(" - hdr_len: %u", (unsigned int)hlen);
+	pr_err(" - offset: %d", (unsigned int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1320,16 +1360,17 @@ int __icmpv6_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
-	if (ret != PANDA_OKAY)
-		return ret;
 
 	pr_err("ICMPV6 NODE ret: %d", ret);
+
+	if (ret != PANDA_OKAY)
+		return ret;
 
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
 
-	pr_err(" - hdr_len: %d", (int)hlen);
-	pr_err(" - offset: %d", (int)(*offset));
+	pr_err(" - hdr_len: %u", (unsigned int)hlen);
+	pr_err(" - offset: %d", (unsigned int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1360,11 +1401,17 @@ int __arp_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("ARP NODE ret: %d", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
+
+	pr_err(" - hdr_len: %u", (unsigned int)hlen);
+	pr_err(" - offset: %d", (unsigned int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1395,11 +1442,17 @@ int __rarp_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("RARP NODE ret: %d", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
+
+	pr_err(" - hdr_len: %u", (unsigned int)hlen);
+	pr_err(" - offset: %d", (unsigned int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1430,11 +1483,17 @@ int __tcp_node_panda_parse(const struct panda_parser *parser,
 	int ret;
 
 	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
+
+	pr_err("TCP NODE ret: %d", ret);
+
 	if (ret != PANDA_OKAY)
 		return ret;
 
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
+
+	pr_err(" - hdr_len: %u", (unsigned int)hlen);
+	pr_err(" - offset: %d", (unsigned int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1466,7 +1525,7 @@ int panda_parser_flower_ether_panda_parse_ether_node(const struct panda_parser *
 				       len, &offset, metadata, flags,
 				       max_encaps, frame, frame_num);
 
-	pr_err("RET: 0x%x", ret);
+	pr_err("INIT ETHER NODE RET: 0x%x", ret);
 
 	for (i = 0; i < PANDA_LOOP_COUNT; i++) {
 		if (ret != PANDA_STOP_OKAY)
@@ -1475,6 +1534,7 @@ int panda_parser_flower_ether_panda_parse_ether_node(const struct panda_parser *
 		pr_err("NEXT: 0x%x", (unsigned int)next);
 		switch (next) {
 		case CODE_IGNORE:
+			pr_err("REACHED CODE_IGNORE");
 			break;
 		case CODE_ether_node:
 			ret = __ether_node_panda_parse(parser, &hdr, len, &offset,
@@ -1597,6 +1657,7 @@ int panda_parser_flower_ether_panda_parse_ether_node(const struct panda_parser *
 						     frame_num);
 			break;
 		default:
+			pr_err("REACHED PANDA_UNKNOW_PROTO");
 			return PANDA_STOP_UNKNOWN_PROTO;
 		}
 	}
