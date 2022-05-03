@@ -254,6 +254,14 @@ struct flow_dissector_key_hash {
 };
 
 /**
+ * struct flow_dissector_key_ppp:
+ * @ppp_proto: ppp_proto value
+ */
+struct flow_dissector_key_ppp {
+	__be16 ppp_proto;
+};
+
+/**
  * struct flow_dissector_key_num_of_vlans:
  * @num_of_vlans: num_of_vlans value
  */
@@ -290,7 +298,7 @@ enum flow_dissector_key_id {
 	FLOW_DISSECTOR_KEY_META, /* struct flow_dissector_key_meta */
 	FLOW_DISSECTOR_KEY_CT, /* struct flow_dissector_key_ct */
 	FLOW_DISSECTOR_KEY_HASH, /* struct flow_dissector_key_hash */
-	FLOW_DISSECTOR_KEY_PPP,
+	FLOW_DISSECTOR_KEY_PPP, /* struct flow_dissector_key_ppp */
 	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
 
 	FLOW_DISSECTOR_KEY_MAX,
