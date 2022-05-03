@@ -1472,7 +1472,7 @@ int panda_parser_flower_ether_panda_parse_ether_node(const struct panda_parser *
 		if (ret != PANDA_STOP_OKAY)
 			break;
 
-		pr_err("NEXT: 0x%x", next);
+		pr_err("NEXT: 0x%x", (unsigned int)next);
 		switch (next) {
 		case CODE_IGNORE:
 			break;
