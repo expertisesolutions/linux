@@ -275,7 +275,7 @@ int __ether_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -351,7 +351,7 @@ int __ip_overlay_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -412,7 +412,7 @@ int __ipv4_check_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -488,7 +488,7 @@ int __ipv4_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -564,7 +564,7 @@ int __ipv6_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -652,7 +652,7 @@ int __ipv6_check_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -740,7 +740,7 @@ int __ipv6_eh_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -828,7 +828,7 @@ int __ipv6_frag_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -916,7 +916,7 @@ int __ppp_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 	
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -977,7 +977,7 @@ int __pppoe_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -1038,7 +1038,7 @@ int __e8021AD_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
@@ -1114,7 +1114,7 @@ int __e8021Q_node_panda_parse(const struct panda_parser *parser,
 		len -= hlen;
 	}
 
-	pr_err(" - offset	: %d", offset);
+	pr_err(" - offset	: %d", (int)(*offset));
 	pr_err(" - len		: %d", (int)len);
 
 	switch (type) {
