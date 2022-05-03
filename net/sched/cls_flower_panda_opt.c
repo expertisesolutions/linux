@@ -1163,8 +1163,13 @@ int __ipv4ip_node_panda_parse(const struct panda_parser *parser,
 	if (ret != PANDA_OKAY)
 		return ret;
 
+	pr_err("IPV4 IP NODE ret: %d", ret);
+
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
+
+	pr_err(" - hdr_len: %d", (int)hlen);
+	pr_err(" - offset: %d", (int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1198,8 +1203,13 @@ int __ipv6ip_node_panda_parse(const struct panda_parser *parser,
 	if (ret != PANDA_OKAY)
 		return ret;
 
+	pr_err("IPV6 IP NODE ret: %d", ret);
+
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
+
+	pr_err(" - hdr_len: %d", (int)hlen);
+	pr_err(" - offset: %d", (int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1233,8 +1243,13 @@ int __ports_node_panda_parse(const struct panda_parser *parser,
 	if (ret != PANDA_OKAY)
 		return ret;
 
+	pr_err("PORTS NODE ret: %d", ret);
+
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
+
+	pr_err(" - hdr_len: %d", (int)hlen);
+	pr_err(" - offset: %d", (int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1268,8 +1283,13 @@ int __icmpv4_node_panda_parse(const struct panda_parser *parser,
 	if (ret != PANDA_OKAY)
 		return ret;
 
+	pr_err("ICMPV4 NODE ret: %d", ret);
+
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
+
+	pr_err(" - hdr_len: %d", (int)hlen);
+	pr_err(" - offset: %d", (int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
@@ -1303,8 +1323,13 @@ int __icmpv6_node_panda_parse(const struct panda_parser *parser,
 	if (ret != PANDA_OKAY)
 		return ret;
 
+	pr_err("ICMPV6 NODE ret: %d", ret);
+
 	ctrl.hdr_len = hlen;
 	ctrl.hdr_offset = *offset;
+
+	pr_err(" - hdr_len: %d", (int)hlen);
+	pr_err(" - offset: %d", (int)(*offset));
 
 	if (parse_node->ops.extract_metadata)
 		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
