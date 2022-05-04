@@ -1726,6 +1726,19 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
 				TCA_FLOWER_KEY_VLAN_ETH_TYPE,
 				&key->vlan, &mask->vlan);
 
+		pr_err("vlan_id: 0x%x", key->vlan.vlan_id);
+		pr_err("vlan_dei: 0x%x", key->vlan.vlan_dei);
+		pr_err("vlan_priority: 0x%x", key->vlan.vlan_priority);
+		pr_err("vlan_tpid: 0x%x", key->vlan.vlan_tpid);
+		pr_err("vlan_eth_type: 0x%x", key->vlan.vlan_eth_type);
+		pr_err("padding: 0x%x", key->vlan.padding);
+		pr_err("mask vlan_id: 0x%x", mask->vlan.vlan_id);
+		pr_err("mask vlan_dei: 0x%x", mask->vlan.vlan_dei);
+		pr_err("mask vlan_priority: 0x%x", mask->vlan.vlan_priority);
+		pr_err("mask vlan_tpid: 0x%x", mask->vlan.vlan_tpid);
+		pr_err("mask vlan_eth_type: 0x%x", mask->vlan.vlan_eth_type);
+		pr_err("mask padding: 0x%x", mask->vlan.padding);
+
 		if (is_vlan_key(tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE],
 				&ethertype, key, mask, 1)) {
 			fl_set_key_vlan(tb, ethertype,
