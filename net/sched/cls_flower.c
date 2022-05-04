@@ -396,12 +396,13 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 #ifdef USE_PANDA
 	if (skb->vlan_present) {
 		skb_key.basic.n_proto = skb_protocol(skb, true);
+		skb_key.vlan.vlan_eth_type = skb_protocol(skb, false);
 		skb_key.vlan.vlan_id = skb_vlan_tag_get_id(skb);
 		skb_key.vlan.vlan_priority = skb_vlan_tag_get_prio(skb);
 		skb_key.vlan.vlan_tpid = skb->vlan_proto;
 	}
 
-	pr_err("vlan.vlan_id:%d vlan.vlan_priority:%d vlan.vlan_tpid%d",skb_key.vlan.vlan_id,skb_key.vlan.vlan_priority,skb_key.vlan.vlan_tpid);
+	pr_err("vlan.vlan_id:%d vlan.vlan_priority:%d vlan.vlan_tpid:%d vlan_eth_type:%d",skb_key.vlan.vlan_id,skb_key.vlan.vlan_priority,skb_key.vlan.vlan_tpid,skb_key.vlan.vlan_eth_type);
 	pr_err("basic n_proto:%d ip_proto:%d padding:%d",skb_key.basic.n_proto,skb_key.basic.ip_proto,skb_key.basic.padding);
 	pr_err("control th_off:%d add_type:%d flags:%d",skb_key.control.thoff,skb_key.control.addr_type,skb_key.control.flags);
 	pr_err("ipv4: src%0x dst%0x",skb_key.ipv4.src,skb_key.ipv4.dst);
