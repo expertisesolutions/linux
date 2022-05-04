@@ -401,7 +401,19 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 		skb_key.vlan.vlan_tpid = skb->vlan_proto;
 	}
 
+	pr_err("vlan.vlan_id:%d vlan.vlan_priority:%d vlan.vlan_tpid%d",skb_key.vlan.vlan_id,skb_key.vlan.vlan_priority,skb_key.vlan.vlan_tpid);
+	pr_err("basic n_proto:%d ip_proto:%d padding:%d",skb_key.basic.n_proto,skb_key.basic.ip_proto,skb_key.basic.padding);
+	pr_err("control th_off:%d add_type:%d flags:%d",skb_key.control.thoff,skb_key.control.addr_type,skb_key.control.flags);
+	pr_err("ipv4: src%0x dst%0x",skb_key.ipv4.src,skb_key.ipv4.dst);
+	pr_err("port ports:%d src%d dst%d",skb_key.tp.ports,skb_key.tp.src,skb_key.tp.dst);
+
 	fl_panda_parse(skb, &skb_key);
+
+	pr_err("vlan.vlan_id:%d vlan.vlan_priority:%d vlan.vlan_tpid%d",skb_key.vlan.vlan_id,skb_key.vlan.vlan_priority,skb_key.vlan.vlan_tpid);
+	pr_err("basic n_proto:%d ip_proto%d padding%d",skb_key.basic.n_proto,skb_key.basic.ip_proto,skb_key.basic.padding);
+	pr_err("control th_off:%d add_type%d flags%d",skb_key.control.thoff,skb_key.control.addr_type,skb_key.control.flags);
+	pr_err("ipv4: src%0x dst%0x",skb_key.ipv4.src,skb_key.ipv4.dst);
+	pr_err("port ports:%d src%d dst%d",skb_key.tp.ports,skb_key.tp.src,skb_key.tp.dst);
 #else	//USE_PANDA
 		skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);
 		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
