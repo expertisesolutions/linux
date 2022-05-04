@@ -51,12 +51,6 @@ PANDA_PARSER_KMOD_EXTERN(panda_parser_flower_ether);
 #define TCA_FLOWER_KEY_CT_FLAGS_MASK \
 		(TCA_FLOWER_KEY_CT_FLAGS_MAX - 1)
 
-struct flow_dissector_key_ppp {
-	__be16 ppp_proto;
-};
-
-struct flow_dissector_key_ppp ppp;
-
 struct fl_flow_key {
 	struct flow_dissector_key_meta meta;
 	struct flow_dissector_key_control control;

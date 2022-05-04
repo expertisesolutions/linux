@@ -35,9 +35,6 @@
  * Implement flow dissector in PANDA. A protocol parse graph is created and
  * metadata is extracted at various nodes.
  */
-struct flow_dissector_key_ppp {
-	__be16 ppp_proto;
-};
 
 struct fl2_flow_key {
 	struct flow_dissector_key_meta meta;
